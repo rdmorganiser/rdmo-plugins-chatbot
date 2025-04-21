@@ -1,0 +1,38 @@
+{% extends 'core/page.html' %}
+{% load static %}
+{% load i18n %}
+{% load core_tags %}
+
+{% block head %}
+    <meta name='project' content="{{ project.id }}" />
+    <meta name='execute_script_tags' content="{{ settings.TEMPLATES_EXECUTE_SCRIPT_TAGS|lower }}" />
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'projects/css/interview.css' %}" />
+    <link rel="stylesheet" href="{% static 'projects/css/chatbot.css' %}" />
+    {{ block.super }}
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{% static 'projects/js/interview.js' %}" defer></script>
+{% endblock %}
+
+{% block sidebar %}
+
+    <div id="sidebar"></div>
+
+{% endblock %}
+
+{% block page %}
+
+    <div id="main" class="interview"></div>
+
+{% endblock %}
+
+{% block extra_body %}
+    <div id="chatbot" class="chatbot">
+        <button type="button" class="btn btn-primary">?</button>
+    </div>
+{% endblock %}
