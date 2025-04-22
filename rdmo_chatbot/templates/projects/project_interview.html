@@ -32,7 +32,7 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script src="http://localhost:8080/copilot/index.js"></script>
+    <script src="http://localhost:8000/copilot/index.js"></script>
     <script>
         window.addEventListener("chainlit-call-fn", (e) => {
             const { name, args, callback } = e.detail;
