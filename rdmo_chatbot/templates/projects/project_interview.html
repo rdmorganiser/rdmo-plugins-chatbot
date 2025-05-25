@@ -32,7 +32,7 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script src="http://localhost:8000/copilot/index.js"></script>
+    <script src="{{ settings.CHAINLIT_URL }}/copilot/index.js"></script>
     <script>
         window.addEventListener("chainlit-call-fn", (e) => {
             const { name, args, callback } = e.detail;
@@ -41,7 +41,7 @@
     </script>
     <script>
         window.mountChainlitWidget({
-            chainlitServer: "http://localhost:8000",
+            chainlitServer: "{{ settings.CHAINLIT_URL }}",
         });
     </script>
 {% endblock %}
