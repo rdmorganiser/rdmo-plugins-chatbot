@@ -10,7 +10,6 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'projects/css/interview.css' %}" />
-    <link rel="stylesheet" href="{% static 'projects/css/chatbot.css' %}" />
     {{ block.super }}
 {% endblock %}
 
@@ -36,7 +35,11 @@
     <script>
         window.addEventListener("chainlit-call-fn", (e) => {
             const { name, args, callback } = e.detail;
-            callback("You sent: " + args.msg);
+            if (name == 'getContext') {
+                callback({
+                    project_id: {{ project.id }}
+                });
+            }
         });
     </script>
     <script>

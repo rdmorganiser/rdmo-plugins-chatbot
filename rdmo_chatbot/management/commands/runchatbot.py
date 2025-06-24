@@ -10,25 +10,31 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-
     def add_arguments(self, parser):
-        parser.add_argument('-w', dest='watch', action='store_true', default=False)
+        parser.add_argument("-w", "--watch", dest="watch", action="store_true", default=False)
+        parser.add_argument("-d", "--debug", dest="debug", action="store_true", default=False)
+        parser.add_argument("--host", dest="host", default="localhost")
+        parser.add_argument("--port", dest="port", default="8080")
+        parser.add_argument("--root-path", dest="root-path", default="/chatbot")
 
     def handle(self, *args, **options):
         # find the path of the rdmo_chatbot directory
-        chatbot_path = Path(__file__).parent.parent.parent
-        chatbot_port = settings.CHAINLIT_URL.rsplit(':')[-1]
+        chatbot_path = Path(__file__).parent.parent.parent / "chatbot"
 
-        chatbot_args = ['chainlit', 'run', 'app.py', '--port', chatbot_port]
+        chatbot_args = ["chainlit", "run", "app.py", "--headless"] + [
+            f"--{key}" if value is True else f"--{key}={value}"
+            for key, value in options.items()
+            if key in ["watch", "debug", "host", "port", "root-path"] and value
+        ]
 
-        if options.get('watch'):
-            chatbot_args.append('-w')
+        print(" ".join(chatbot_args))
 
         subprocess.check_call(
             chatbot_args,
             cwd=chatbot_path,
             env={
-                'PATH': os.getenv('PATH'),
-                'PYTHONPATH': Path.cwd()
-            }
+                "PATH": os.getenv("PATH"),
+                "PYTHONPATH": Path.cwd(),
+                "CHAINLIT_AUTH_SECRET": settings.CHAINLIT_AUTH_SECRET,
+            },
         )

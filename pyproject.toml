@@ -33,6 +33,14 @@ dependencies = [
     "openai>=1.75.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "build",
+    "pre-commit",
+    "ruff",
+    "twine",
+]
+
 [project.urls]
 repository = "https://github.com/rdmorganiser/rdmo-chatbot.git"
 
