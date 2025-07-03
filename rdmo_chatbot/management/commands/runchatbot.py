@@ -15,7 +15,7 @@ class Command(BaseCommand):
         parser.add_argument("-d", "--debug", dest="debug", action="store_true", default=False)
         parser.add_argument("--host", dest="host", default="localhost")
         parser.add_argument("--port", dest="port", default="8080")
-        parser.add_argument("--root-path", dest="root-path", default="/chatbot")
+        parser.add_argument("--root-path", dest="root-path", default=None)
 
     def handle(self, *args, **options):
         # find the path of the rdmo_chatbot directory

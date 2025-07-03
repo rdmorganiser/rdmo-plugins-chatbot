@@ -58,7 +58,9 @@ run the `runchatbot` management script:
 python manage.py runchatbot
 ```
 
-The authentication via HTTP headers requires a reverse proxy setup even while developing. The following NGINX
+### Production
+
+The following NGINX
 config can be used with a minimal [NGINX docker setup](https://hub.docker.com/_/nginx):
 
 ```
@@ -86,5 +88,3 @@ server {
     }
 }
 ```
-
-### Production

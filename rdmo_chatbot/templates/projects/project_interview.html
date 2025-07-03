@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load core_tags %}
+{% load chatbot_tags %}
 
 {% block head %}
     <meta name='project' content="{{ project.id }}" />
@@ -37,7 +38,7 @@
             const { name, args, callback } = e.detail;
             if (name == 'getContext') {
                 callback({
-                    project_id: {{ project.id }}
+                    project: "{% chainlit_project project %}"
                 });
             }
         });
@@ -45,6 +46,7 @@
     <script>
         window.mountChainlitWidget({
             chainlitServer: "{{ settings.CHAINLIT_URL }}",
+            accessToken: "{% chainlit_token request.user %}"
         });
     </script>
 {% endblock %}
