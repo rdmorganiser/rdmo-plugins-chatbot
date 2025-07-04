@@ -58,10 +58,40 @@ run the `runchatbot` management script:
 python manage.py runchatbot
 ```
 
+The chatbot interface then runs at http://localhost:8080
+
 ### Production
 
-The following NGINX
-config can be used with a minimal [NGINX docker setup](https://hub.docker.com/_/nginx):
+The chatbot can be deployed using Gunicorn and Systemd:
+
+```
+# in /etc/systemd/system/chatbot-chainlit.service
+
+[Unit]
+Description=RDMO chatbot chainlit gunicorn daemon
+After=network.target
+
+[Service]
+User=rdmo
+Group=rdmo
+
+WorkingDirectory=/srv/rdmo/rdmo-app/
+
+LogsDirectory=chainlit
+
+Environment="PATH=/srv/rdmo/rdmo-app/env/bin/"
+Environment="PYTHONUNBUFFERED=1"
+
+ExecStart=/srv/rdmo/rdmo-app/env/bin/python manage.py runchatbot --root-path=/chatbot
+
+StandardOutput=append:/var/log/chainlit/stdout.log
+StandardError=append:/var/log/chainlit/stderr.log
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Chainlit uses Websockets, this makes the deployment a bit different then for RDMO alone. The following NGINX config can be used:
 
 ```
 server {
@@ -87,4 +117,39 @@ server {
         proxy_set_header Host $host;
     }
 }
+```
+
+For Apache2, you can use:
+
+```
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    ProxyPreserveHost On
+    ProxyRequests Off
+
+    <Location />
+        ProxyPass "http://localhost:8000/"
+        ProxyPassReverse "http://localhost:8000/"
+    </Location>
+
+    <Location /chatbot>
+        ProxyPass "http://localhost:8080/chatbot"
+        ProxyPassReverse "http://localhost:8080/chatbot"
+    </Location>
+
+    <Location /chatbot/ws>
+        ProxyPass "ws://localhost:8080/chatbot/ws"
+        ProxyPassReverse "ws://localhost:8080/chatbot/ws"
+    </Location>
+
+    Alias /static /srv/rdmo/rdmo-app/static_root/
+    <Directory /srv/rdmo/rdmo-app/static_root/>
+        Require all granted
+    </Directory>
+</VirtualHost>
 ```
