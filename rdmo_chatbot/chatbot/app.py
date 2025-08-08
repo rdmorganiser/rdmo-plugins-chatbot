@@ -1,19 +1,13 @@
 import os
 
 import chainlit as cl
-from openai import AsyncOpenAI
-from utils import get_project, get_user
+from utils import get_adapter, get_project, get_user
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 from django.conf import settings
 
-client = AsyncOpenAI(
-    base_url=settings.CHAINLIT_OPENAI_URL,
-    api_key=settings.CHAINLIT_OPENAI_API_KEY,
-)
-
-cl.instrument_openai()
+adapter = get_adapter(cl, settings)
 
 
 @cl.header_auth_callback
@@ -46,14 +40,7 @@ async def on_chat_start(*args, **kwargs):
 
 @cl.on_message
 async def on_message(message: cl.Message):
-    messages = [
-        {"content": cl.user_session.get("system_prompt"), "role": "system"},
-        *cl.chat_context.to_openai(),
-    ]
-
-    response = await client.chat.completions.create(messages=messages, **settings.CHAINLIT_SETTINGS)
-
-    await cl.Message(content=response.choices[0].message.content).send()
+    await adapter.on_message(message)
 
 
 @cl.set_starters
