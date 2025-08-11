@@ -77,8 +77,6 @@ CHATBOT_STARTERS = [
 ]
 ```
 
-```
-
 Deployment
 ----------
 
