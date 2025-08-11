@@ -36,6 +36,8 @@ CHAINLIT_OPENAI_SETTINGS = {
 }
 ```
 
+and install the additional dependency with `pip install openai`.
+
 Alternatively, for the `OpenAILangChainAdapter`:
 
 ```python
@@ -49,6 +51,8 @@ CHAINLIT_LANGCHAIN_SETTINGS = {
 }
 ```
 
+and install the additional dependencies with `pip install langchain langchain-openai`.
+
 Alternatively, for the `OllamaLangChainAdapter`:
 
 ```python
@@ -58,6 +62,8 @@ CHAINLIT_LANGCHAIN_SETTINGS = {
     "model": 'mistral:7b'
 }
 ```
+
+and install the additional dependencies with `pip install langchain langchain-ollama`.
 
 For starters use:
 
