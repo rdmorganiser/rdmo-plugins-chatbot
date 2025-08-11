@@ -2,6 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% load core_tags %}
+{% load chatbot_tags %}
 
 {% block head %}
     <meta name='project' content="{{ project.id }}" />
@@ -10,7 +11,6 @@
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'projects/css/interview.css' %}" />
-    <link rel="stylesheet" href="{% static 'projects/css/chatbot.css' %}" />
     {{ block.super }}
 {% endblock %}
 
@@ -32,16 +32,21 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script src="http://localhost:8000/copilot/index.js"></script>
+    <script src="{{ settings.CHAINLIT_URL }}/copilot/index.js"></script>
     <script>
         window.addEventListener("chainlit-call-fn", (e) => {
             const { name, args, callback } = e.detail;
-            callback("You sent: " + args.msg);
+            if (name == 'getContext') {
+                callback({
+                    project: "{% chainlit_project project %}"
+                });
+            }
         });
     </script>
     <script>
         window.mountChainlitWidget({
-            chainlitServer: "http://localhost:8000",
+            chainlitServer: "{{ settings.CHAINLIT_URL }}",
+            accessToken: "{% chainlit_token request.user %}"
         });
     </script>
 {% endblock %}
