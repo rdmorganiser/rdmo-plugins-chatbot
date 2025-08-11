@@ -16,7 +16,7 @@ Add the following to your `config/settings/local.py`:
 INSTALLED_APPS = ['rdmo_chatbot', *INSTALLED_APPS]
 SETTINGS_EXPORT += ['CHAINLIT_URL']
 
-CHAINLIT_URL = 'http://localhost:8080/chatbot'
+CHAINLIT_URL = 'http://localhost:8080'
 
 MIDDLEWARE.append('rdmo_chatbot.middleware.ChatbotMiddleware')
 ```
