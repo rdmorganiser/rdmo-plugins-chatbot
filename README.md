@@ -18,17 +18,50 @@ SETTINGS_EXPORT += ['CHAINLIT_URL']
 
 CHAINLIT_URL = 'http://localhost:8080/chatbot'
 
-CHAINLIT_OPENAI_URL = None    # this can be an alternative provider
-CHAINLIT_OPENAI_API_KEY = ''  # this needs to be obtained from open.ai
+MIDDLEWARE.append('rdmo_chatbot.middleware.ChatbotMiddleware')
+```
 
-CHAINLIT_AUTH_SECRET = ''     # this should be a longer random string
+For the `OpenAIAdapter` add:
 
-CHAINLIT_SETTINGS = {
-    "model": 'gpt-3.5-turbo',
-    "max_tokens": 100,
-    "temperature": 0.5
+```python
+CHAINLIT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.openai.OpenAIAdapter'
+
+CHAINLIT_OPENAI_URL = ''      # or None for the default OpenAI API 
+CHAINLIT_OPENAI_API_KEY = ''
+
+CHAINLIT_OPENAI_SETTINGS = {
+   "model": 'gpt-3.5-turbo',
+   "max_tokens": 500,
+   "temperature": 0.5
 }
+```
 
+Alternatively, for the `OpenAILangChainAdapter`:
+
+```python
+CHAINLIT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OpenAILangChainAdapter'
+
+CHAINLIT_LANGCHAIN_SETTINGS = {
+   "openai_api_key": '',
+   "model": 'gpt-3.5-turbo',
+   "max_tokens": 500,
+   "temperature": 0.5
+}
+```
+
+Alternatively, for the `OllamaLangChainAdapter`:
+
+```python
+CHAINLIT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OllamaLangChainAdapter'
+
+CHAINLIT_LANGCHAIN_SETTINGS = {
+    "model": 'mistral:7b'
+}
+```
+
+For starters use:
+
+```python
 CHATBOT_STARTERS = [
     {
         'label': 'What is a DMP?',
@@ -36,8 +69,8 @@ CHATBOT_STARTERS = [
         'icon': None
     }
 ]
+```
 
-MIDDLEWARE.append('rdmo_chatbot.middleware.ChatbotMiddleware')
 ```
 
 Deployment
