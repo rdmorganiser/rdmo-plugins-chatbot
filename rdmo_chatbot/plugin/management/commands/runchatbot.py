@@ -1,3 +1,4 @@
+import importlib
 import logging
 import os
 import subprocess
@@ -19,7 +20,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # find the path of the rdmo_chatbot directory
-        chatbot_path = Path(__file__).parent.parent.parent / "chatbot"
+        chatbot_module = importlib.import_module('rdmo_chatbot.chatbot')
+        chatbot_path = chatbot_module.__path__[0]
 
         chatbot_args = ["chainlit", "run", "app.py", "--headless"] + [
             f"--{key}" if value is True else f"--{key}={value}"

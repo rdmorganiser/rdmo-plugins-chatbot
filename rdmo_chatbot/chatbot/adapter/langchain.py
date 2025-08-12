@@ -1,5 +1,5 @@
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableMap
 
 from . import BaseAdapter
@@ -16,7 +16,7 @@ class LangChainAdapter(BaseAdapter):
             [
                 ("system", "{system_prompt}"),
                 MessagesPlaceholder(variable_name="chat_history"),
-                ("human", "{input}")
+                ("human", "{content}")
             ]
         )
 
@@ -25,7 +25,7 @@ class LangChainAdapter(BaseAdapter):
                 {
                     "system_prompt": lambda _: cl.user_session.get("system_prompt"),
                     "chat_history": lambda _: self.chat_history,
-                    "input": lambda input: input["input"],
+                    "content": lambda input: input["content"],
                 }
             )
             | self.prompt
@@ -33,13 +33,11 @@ class LangChainAdapter(BaseAdapter):
         )
 
     async def on_message(self, message):
-        # add user message to chat history
-        self.chat_history.append(HumanMessage(content=message.content))
-
         # invoke llm
-        response = await self.chain.ainvoke({"input": message.content})
+        response = await self.chain.ainvoke({"content": message.content})
 
-        # add ai response to chat history
+        # add messages to chat history
+        self.chat_history.append(HumanMessage(content=message.content))
         self.chat_history.append(response)
 
         # send the response to the user
