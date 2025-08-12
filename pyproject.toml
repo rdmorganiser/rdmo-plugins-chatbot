@@ -51,8 +51,8 @@ exclude = ["*assets*", "*tests*"]
 [tool.setuptools.package-data]
 "*" = ["*"]
 
-[tool.setuptools.dynamic]
-version = {attr = "rdmo_chatbot.__version__"}
+[tool.setuptools_scm]
+version_file = "rdmo_chatbot/_version.py"
 
 [tool.ruff]
 line-length = 120
