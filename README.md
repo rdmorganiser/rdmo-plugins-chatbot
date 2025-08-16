@@ -14,9 +14,9 @@ Add the following to your `config/settings/local.py`:
 
 ```python
 INSTALLED_APPS = ['rdmo_chatbot', *INSTALLED_APPS]
-SETTINGS_EXPORT += ['CHAINLIT_URL']
+SETTINGS_EXPORT += ['CHATBOT_URL']
 
-CHAINLIT_URL = 'http://localhost:8080'
+CHATBOT_URL = 'http://localhost:8080'
 
 MIDDLEWARE.append('rdmo_chatbot.middleware.ChatbotMiddleware')
 ```
@@ -24,12 +24,10 @@ MIDDLEWARE.append('rdmo_chatbot.middleware.ChatbotMiddleware')
 For the `OpenAIAdapter` add:
 
 ```python
-CHAINLIT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.openai.OpenAIAdapter'
-
-CHAINLIT_OPENAI_URL = ''      # or None for the default OpenAI API 
-CHAINLIT_OPENAI_API_KEY = ''
-
-CHAINLIT_OPENAI_SETTINGS = {
+CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.openai.OpenAIAdapter'
+CHATBOT_OPENAI_API_KEY = ''
+CHATBOT_OPENAI_BASE_URL = '' # or None for the default OpenAI API
+CHATBOT_OPENAI_ARGS = {
    "model": 'gpt-3.5-turbo',
    "max_tokens": 500,
    "temperature": 0.5
@@ -41,9 +39,8 @@ and install the additional dependency with `pip install openai`.
 Alternatively, for the `OpenAILangChainAdapter`:
 
 ```python
-CHAINLIT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OpenAILangChainAdapter'
-
-CHAINLIT_LANGCHAIN_SETTINGS = {
+CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OpenAILangChainAdapter'
+CHATBOT_LLM_ARGS = {
    "openai_api_key": '',
    "model": 'gpt-3.5-turbo',
    "max_tokens": 500,
@@ -56,9 +53,8 @@ and install the additional dependencies with `pip install langchain langchain-op
 Alternatively, for the `OllamaLangChainAdapter`:
 
 ```python
-CHAINLIT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OllamaLangChainAdapter'
-
-CHAINLIT_LANGCHAIN_SETTINGS = {
+CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OllamaLangChainAdapter'
+CHATBOT_LLM_ARGS = {
     "model": 'mistral:7b'
 }
 ```

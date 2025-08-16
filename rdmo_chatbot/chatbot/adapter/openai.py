@@ -4,15 +4,14 @@ from . import BaseAdapter
 
 
 class OpenAIAdapter(BaseAdapter):
-    def __init__(self, cl, settings):
+    def __init__(self, cl, config):
         self.cl = cl
         self.cl.instrument_openai()
-
-        self.settings = settings
+        self.config = config
 
         self.client = AsyncOpenAI(
-            base_url=settings.CHAINLIT_OPENAI_URL,
-            api_key=settings.CHAINLIT_OPENAI_API_KEY,
+            base_url=config.OPENAI_BASE_URL,
+            api_key=config.OPENAI_API_KEY,
         )
 
     async def on_message(self, message):
@@ -22,7 +21,7 @@ class OpenAIAdapter(BaseAdapter):
         ]
 
         response = await self.client.chat.completions.create(
-            messages=messages, **self.settings.CHAINLIT_OPENAI_SETTINGS
+            messages=messages, **self.config.OPENAI_ARGS
         )
 
         await self.cl.Message(content=response.choices[0].message.content).send()

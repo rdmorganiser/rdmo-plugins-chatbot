@@ -1,18 +1,13 @@
-import os
-
 import chainlit as cl
-from utils import get_adapter, get_project, get_user
+from utils import get_adapter, get_config, get_project, get_user
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
-
-from django.conf import settings
-
-adapter = get_adapter(cl, settings)
+config = get_config()
+adapter = get_adapter(cl, config)
 
 
 @cl.header_auth_callback
 def header_auth_callback(headers):
-    return get_user(headers)
+    return get_user(config, headers)
 
 
 @cl.on_chat_start
@@ -45,4 +40,4 @@ async def on_message(message: cl.Message):
 
 @cl.set_starters
 async def set_starters():
-    return [cl.Starter(**starter) for starter in settings.CHATBOT_STARTERS]
+    return [cl.Starter(**starter) for starter in config.STARTERS]

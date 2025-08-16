@@ -11,7 +11,7 @@ from rdmo.projects.exports import AnswersExportMixin
 register = template.Library()
 
 
-def get_chainlit_token(user):
+def get_chatbot_token(user):
     token_data = {
         "identifier": user.username,
         "display_name": get_full_name(user),
@@ -19,10 +19,10 @@ def get_chainlit_token(user):
         "exp": datetime.utcnow() + timedelta(minutes=60 * 24),
     }
 
-    return jwt.encode(token_data, settings.CHAINLIT_AUTH_SECRET, algorithm="HS256")
+    return jwt.encode(token_data, settings.CHATBOT_AUTH_SECRET, algorithm="HS256")
 
 
-def get_chainlit_project(project):
+def get_chatbot_project(project):
     export_plugin = AnswersExportMixin()
     export_plugin.project = project
     export_plugin.snapshot = None

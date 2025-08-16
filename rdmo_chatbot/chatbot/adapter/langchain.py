@@ -6,9 +6,9 @@ from . import BaseAdapter
 
 
 class LangChainAdapter(BaseAdapter):
-    def __init__(self, cl, settings):
+    def __init__(self, cl, config):
         self.cl = cl
-        self.settings = settings
+        self.config = config
 
         self.chat_history = []
 
@@ -53,7 +53,7 @@ class OpenAILangChainAdapter(LangChainAdapter):
     @property
     def llm(self):
         from langchain_openai import ChatOpenAI
-        return ChatOpenAI(**self.settings.CHAINLIT_LANGCHAIN_SETTINGS)
+        return ChatOpenAI(**self.config.LLM_ARGS)
 
 
 class OllamaLangChainAdapter(LangChainAdapter):
@@ -61,4 +61,4 @@ class OllamaLangChainAdapter(LangChainAdapter):
     @property
     def llm(self):
         from langchain_ollama import ChatOllama
-        return ChatOllama(**self.settings.CHAINLIT_LANGCHAIN_SETTINGS)
+        return ChatOllama(**self.config.LLM_ARGS)

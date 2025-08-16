@@ -1,4 +1,4 @@
-from .utils import get_chainlit_token
+from .utils import get_chatbot_token
 
 
 class ChatbotMiddleware:
@@ -9,11 +9,10 @@ class ChatbotMiddleware:
         response = self.get_response(request)
 
         if request.user.is_authenticated:
-            response.set_cookie("chainlit_token", get_chainlit_token(request.user))
+            response.set_cookie("chatbot_token", get_chatbot_token(request.user))
         else:
-            if "access_token" in request.COOKIES:
-                response.delete_cookie("chainlit_token")
-                response.delete_cookie("access_token")
-                response.delete_cookie("X-Chainlit-Session-id")
+            response.delete_cookie("chatbot_token")
+            response.delete_cookie("access_token")
+            response.delete_cookie("X-Chainlit-Session-id")
 
         return response

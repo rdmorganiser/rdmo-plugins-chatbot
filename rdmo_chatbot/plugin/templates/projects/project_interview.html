@@ -32,21 +32,21 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script src="{{ settings.CHAINLIT_URL }}/copilot/index.js"></script>
+    <script src="{{ settings.CHATBOT_URL }}/copilot/index.js"></script>
     <script>
         window.addEventListener("chainlit-call-fn", (e) => {
             const { name, args, callback } = e.detail;
             if (name == 'getContext') {
                 callback({
-                    project: "{% chainlit_project project %}"
+                    project: "{% chatbot_project project %}"
                 });
             }
         });
     </script>
     <script>
         window.mountChainlitWidget({
-            chainlitServer: "{{ settings.CHAINLIT_URL }}",
-            accessToken: "{% chainlit_token request.user %}"
+            chainlitServer: "{{ settings.CHATBOT_URL }}",
+            accessToken: "{% chatbot_token request.user %}"
         });
     </script>
 {% endblock %}
