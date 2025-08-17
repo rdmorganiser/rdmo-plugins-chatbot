@@ -29,11 +29,16 @@ dynamic = [
   "version",
 ]
 dependencies = [
-    "chainlit>=2.5.5",
-    "openai>=1.75.0",
+    "chainlit>=2.5.5"
 ]
 
 [project.optional-dependencies]
+openai = [
+  "langchain-openai",
+]
+ollama = [
+  "langchain-ollama",
+]
 dev = [
     "build",
     "pre-commit",
