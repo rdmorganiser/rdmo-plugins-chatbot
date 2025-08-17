@@ -6,8 +6,14 @@ Setup
 
 The setup assumes that `rdmo-app` is already configured. First, install the plugin
 
-```
+```bash
+# directly from github
 pip install git+https://github.com/rdmorganiser/rdmo-plugins-chatbot
+
+# alternatively, from a local copy
+git clone git@github.com:rdmorganiser/rdmo-plugins-llm-views
+pip install -e rdmo-plugins-chatbot[openai]
+pip install -e rdmo-plugins-chatbot[ollama]  # alternatively
 ```
 
 Add the following to your `config/settings/local.py`:
@@ -16,9 +22,20 @@ Add the following to your `config/settings/local.py`:
 INSTALLED_APPS = ['rdmo_chatbot', *INSTALLED_APPS]
 SETTINGS_EXPORT += ['CHATBOT_URL']
 
-CHATBOT_URL = 'http://localhost:8080'
-
 MIDDLEWARE.append('rdmo_chatbot.middleware.ChatbotMiddleware')
+
+CHATBOT_URL = 'http://localhost:8080'
+CHATBOT_AUTH_SECRET = ''  # secret long random string
+
+CHATBOT_SYSTEM_PROMPT = '''
+You are a knowledgeable assistant specializing in writing data management plans (DMPs).
+
+- Take the provided context data into account.
+- Keep your response concise, not exceeding 100 words.
+- Maintain a professional, clear, and concise writing style.
+
+The name of the user is: {user}.
+'''
 ```
 
 For the `OpenAIAdapter` add:
@@ -26,11 +43,9 @@ For the `OpenAIAdapter` add:
 ```python
 CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.openai.OpenAIAdapter'
 CHATBOT_OPENAI_API_KEY = ''
-CHATBOT_OPENAI_BASE_URL = '' # or None for the default OpenAI API
+CHATBOT_OPENAI_BASE_URL = ''  # or None for the default OpenAI API
 CHATBOT_OPENAI_ARGS = {
-   "model": 'gpt-3.5-turbo',
-   "max_tokens": 500,
-   "temperature": 0.5
+   "model": 'gpt-4.1-nano'
 }
 ```
 
@@ -42,9 +57,8 @@ Alternatively, for the `OpenAILangChainAdapter`:
 CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OpenAILangChainAdapter'
 CHATBOT_LLM_ARGS = {
    "openai_api_key": '',
-   "model": 'gpt-3.5-turbo',
-   "max_tokens": 500,
-   "temperature": 0.5
+   "openai_api_base": ''  # or None for the default OpenAI API
+   "model": 'gpt-4.1-nano'
 }
 ```
 
