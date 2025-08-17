@@ -41,7 +41,7 @@ class LangChainAdapter(BaseAdapter):
 
     async def on_message(self, message, context, stream=False):
         inputs = {
-            "system_prompt": self.config.SYSTEM_PROMPT,
+            "system_prompt": self.config.SYSTEM_PROMPT.format(user=self.user.display_name),
             "context": json.dumps(context),
             "history": self.history,
             "content": message.content
