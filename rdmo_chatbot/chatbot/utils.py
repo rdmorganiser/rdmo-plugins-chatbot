@@ -35,5 +35,5 @@ def get_user(config, headers):
         return None
 
 
-def get_project(project_data):
-    return json.loads(base64.b64decode(project_data).decode())
+def parse_context(raw_context):
+    return json.loads(base64.b64decode(raw_context).decode())

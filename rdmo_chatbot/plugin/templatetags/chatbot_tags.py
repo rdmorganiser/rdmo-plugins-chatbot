@@ -14,5 +14,10 @@ def chatbot_token(user):
 
 
 @register.simple_tag()
-def chatbot_project(project):
-    return base64.b64encode(json.dumps(get_chatbot_project(project)).encode()).decode()
+def chatbot_context(**kwargs):
+    context = {}
+
+    if "project" in kwargs:
+        context["project"] = get_chatbot_project(kwargs["project"])
+
+    return base64.b64encode(json.dumps(context).encode()).decode()

@@ -16,7 +16,9 @@ class OpenAIAdapter(BaseAdapter):
 
     async def on_message(self, message):
         messages = [
-            {"content": self.cl.user_session.get("system_prompt"), "role": "system"},
+            {
+                "role": "system", "content": self.config.SYSTEM_PROMPT
+            },
             *self.cl.chat_context.to_openai(),
         ]
 

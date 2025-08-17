@@ -37,9 +37,7 @@
         window.addEventListener("chainlit-call-fn", (e) => {
             const { name, args, callback } = e.detail;
             if (name == 'getContext') {
-                callback({
-                    project: "{% chatbot_project project %}"
-                });
+                callback("{% chatbot_context project=project %}")
             }
         });
     </script>

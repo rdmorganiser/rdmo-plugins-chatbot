@@ -1,51 +1,72 @@
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import HumanMessage
-from langchain_core.runnables import RunnableMap
+import json
+
+from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 from . import BaseAdapter
 
+memory_store = {}
 
 class LangChainAdapter(BaseAdapter):
     def __init__(self, cl, config):
         self.cl = cl
         self.config = config
 
-        self.chat_history = []
-
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", "{system_prompt}"),
-                MessagesPlaceholder(variable_name="chat_history"),
-                ("human", "{content}")
+                ("system", "{context}"),
+                MessagesPlaceholder(variable_name="history"),
+                ("user", "{content}")
             ]
         )
 
-        self.chain = (
-            RunnableMap(
-                {
-                    "system_prompt": lambda _: cl.user_session.get("system_prompt"),
-                    "chat_history": lambda _: self.chat_history,
-                    "content": lambda input: input["content"],
-                }
-            )
-            | self.prompt
-            | self.llm
-        )
-
-    async def on_message(self, message):
-        # invoke llm
-        response = await self.chain.ainvoke({"content": message.content})
-
-        # add messages to chat history
-        self.chat_history.append(HumanMessage(content=message.content))
-        self.chat_history.append(response)
-
-        # send the response to the user
-        await self.cl.Message(content=response.content).send()
+        self.chain = self.prompt | self.llm
 
     @property
     def llm(self):
         raise NotImplementedError
+
+    @property
+    def user(self):
+        return self.cl.user_session.get("user")
+
+    @property
+    def history(self):
+        return self.cl.user_session.get("history", [])
+
+    async def on_chat_start(self):
+        history = memory_store.get(self.user.identifier, [])
+        self.cl.user_session.set("history", history)
+
+    async def on_message(self, message, context, stream=False):
+        inputs = {
+            "system_prompt": self.config.SYSTEM_PROMPT,
+            "context": json.dumps(context),
+            "history": self.history,
+            "content": message.content
+        }
+
+        response_content = ""
+        if stream:
+            async for chunk in self.chain.astream(inputs):
+                if isinstance(chunk, AIMessageChunk):
+                    response_content += chunk.content
+                    await self.cl.Message(content=chunk.content).send()
+        else:
+            response = await self.chain.ainvoke(inputs)
+            response_content = response.content
+            await self.cl.Message(content=response_content).send()
+
+        # add messages to history
+        self.cl.user_session.set("history", [
+            *self.history,
+            HumanMessage(content=message.content),
+            AIMessage(content=response_content)
+        ])
+
+        # persist memory
+        memory_store[self.user.identifier] = self.history
 
 
 class OpenAILangChainAdapter(LangChainAdapter):
