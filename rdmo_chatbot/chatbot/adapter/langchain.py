@@ -47,26 +47,27 @@ class LangChainAdapter(BaseAdapter):
             "content": message.content
         }
 
-        response_content = ""
         if stream:
+            response_message = await self.cl.Message(content="").send()
             async for chunk in self.chain.astream(inputs):
                 if isinstance(chunk, AIMessageChunk):
-                    response_content += chunk.content
-                    await self.cl.Message(content=chunk.content).send()
+                    await response_message.stream_token(chunk.content)
+            await response_message.update()
         else:
             response = await self.chain.ainvoke(inputs)
-            response_content = response.content
-            await self.cl.Message(content=response_content).send()
+            response_message = await self.cl.Message(content=response.content).send()
 
         # add messages to history
         self.cl.user_session.set("history", [
             *self.history,
             HumanMessage(content=message.content),
-            AIMessage(content=response_content)
+            AIMessage(content=response_message.content)
         ])
 
         # persist memory
         memory_store[self.user.identifier] = self.history
+
+        return response_message
 
 
 class OpenAILangChainAdapter(LangChainAdapter):
