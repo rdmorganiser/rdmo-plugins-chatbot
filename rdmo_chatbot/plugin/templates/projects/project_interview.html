@@ -33,18 +33,13 @@
 
 {% block extra_body %}
     <script src="{{ settings.CHATBOT_URL }}/copilot/index.js"></script>
-    <script>
-        window.addEventListener("chainlit-call-fn", (e) => {
-            const { name, args, callback } = e.detail;
-            if (name == 'getContext') {
-                callback("{% chatbot_context project=project %}")
-            }
-        });
-    </script>
+    <script src="{% static 'chatbot/js/copilot.js' %}"></script>
     <script>
         window.mountChainlitWidget({
             chainlitServer: "{{ settings.CHATBOT_URL }}",
-            accessToken: "{% chatbot_token request.user %}"
-        });
+            accessToken: "{% chatbot_token request.user %}",
+            customCssUrl: "{% static 'chatbot/css/copilot.css' %}"
+        })
+        window.addEventListener("chainlit-call-fn", window.copilotEventHandler)
     </script>
 {% endblock %}

@@ -1,5 +1,5 @@
 import chainlit as cl
-from utils import get_adapter, get_config, get_user, parse_context
+from utils import get_adapter, get_config, get_user
 
 config = get_config()
 adapter = get_adapter(cl, config)
@@ -27,14 +27,45 @@ async def on_chat_resume(thread):
 
 @cl.on_message
 async def on_message(message):
+    context = {}
     if cl.context.session.client_type == "copilot":
-        # call the front end to emit "chainlit-call-fn" and expect a base64 encoded json in return
-        raw_context = await cl.CopilotFunction(name="getContext", args={}).acall()
-        context = parse_context(raw_context)
-    else:
-        context = {}
+        context = await cl.CopilotFunction(name="getContext", args={}).acall()
 
-    await adapter.on_message(message, context)
+    response_message = await adapter.on_message(message, context, stream=True)
+    response_message.actions = [
+        cl.Action(name="transfer", icon="file-output", payload={
+            "content": response_message.content
+        })
+    ]
+    await response_message.update()
+
+
+@cl.action_callback("transfer")
+async def on_transfer(action):
+    inputs = {}
+    if cl.context.session.client_type == "copilot":
+        inputs = await cl.CopilotFunction(name="getInputs", args={}).acall()
+
+    element = cl.CustomElement(
+        name="InputSelect",
+        display="inline",
+        props={
+            "inputs": inputs
+        }
+    )
+
+    ask_message = cl.AskElementMessage(
+        content="Where should I add the content?",
+        element=element,
+        timeout=60
+    )
+
+    ask_response = await ask_message.send()
+    ask_response.update(action.payload)
+
+    if ask_response and ask_response.get("submitted"):
+        if cl.context.session.client_type == "copilot":
+            await cl.CopilotFunction(name="setInput", args=ask_response).acall()
 
 
 @cl.on_logout

@@ -6,7 +6,6 @@ from django.conf import settings
 import jwt
 
 from rdmo.accounts.utils import get_full_name
-from rdmo.projects.exports import AnswersExportMixin
 
 register = template.Library()
 
@@ -20,12 +19,3 @@ def get_chatbot_token(user):
     }
 
     return jwt.encode(token_data, settings.CHATBOT_AUTH_SECRET, algorithm="HS256")
-
-
-def get_chatbot_project(project):
-    export_plugin = AnswersExportMixin()
-    export_plugin.project = project
-    export_plugin.snapshot = None
-
-    data = export_plugin.get_data()
-    return data
