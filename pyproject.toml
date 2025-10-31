@@ -29,7 +29,7 @@ dynamic = [
   "version",
 ]
 dependencies = [
-    "chainlit>=2.7.2"
+    "chainlit>=2.8.2"
 ]
 
 [project.optional-dependencies]
