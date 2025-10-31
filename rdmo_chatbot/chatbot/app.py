@@ -27,17 +27,25 @@ async def on_chat_resume(thread):
 
 @cl.on_message
 async def on_message(message):
-    context = {}
-    if cl.context.session.client_type == "copilot":
-        context = await cl.CopilotFunction(name="getContext", args={}).acall()
+    if message.type == "system_message":
+        await adapter.on_system_message(message)
+    else:
+        context = {}
+        if cl.context.session.client_type == "copilot":
+            context = await cl.CopilotFunction(name="getContext", args={}).acall()
 
-    response_message = await adapter.on_message(message, context, stream=True)
-    response_message.actions = [
-        cl.Action(name="transfer", icon="file-output", payload={
-            "content": response_message.content
-        })
-    ]
-    await response_message.update()
+        response_message = await adapter.on_user_message(message, context, stream=True)
+        response_message.actions = [
+            cl.Action(name="transfer", icon="file-output", payload={
+                "content": response_message.content
+            })
+        ]
+        await response_message.update()
+
+
+@cl.on_window_message
+async def on_window_message(message):
+    await adapter.on_system_message(message)
 
 
 @cl.action_callback("transfer")

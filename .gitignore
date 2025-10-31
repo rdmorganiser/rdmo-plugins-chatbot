@@ -6,8 +6,9 @@ __pycache__
 
 env
 .env
-.chainlit
-.files
+
+rdmo_chatbot/chatbot/.chainlit/translations
+rdmo_chatbot/chatbot/.files
 
 node_modules
 

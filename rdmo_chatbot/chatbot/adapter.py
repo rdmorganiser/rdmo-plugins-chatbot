@@ -20,14 +20,19 @@ class BaseAdapter:
     async def on_chat_resume(self, thread):
         pass
 
-    async def on_message(self, message):
+    async def on_user_message(self, message):
+        raise NotImplementedError
+
+    async def on_system_message(self, message):
+        raise NotImplementedError
+
+    async def reset_history():
         raise NotImplementedError
 
 
 class LangChainAdapter(BaseAdapter):
     def __init__(self, cl, config):
-        self.cl = cl
-        self.config = config
+        super().__init__(cl, config)
 
         self.prompt = ChatPromptTemplate.from_messages(
             [
@@ -56,7 +61,7 @@ class LangChainAdapter(BaseAdapter):
         history = memory_store.get(self.user.identifier, [])
         self.cl.user_session.set("history", history)
 
-    async def on_message(self, message, context, stream=False):
+    async def on_user_message(self, message, context, stream=False):
         inputs = {
             "system_prompt": self.config.SYSTEM_PROMPT.format(user=self.user.display_name),
             "context": json.dumps(context),
@@ -85,6 +90,15 @@ class LangChainAdapter(BaseAdapter):
         memory_store[self.user.identifier] = self.history
 
         return response_message
+
+    async def on_system_message(self, message):
+        try:
+            action = message.metadata.get("action")
+        except AttributeError:
+            action = message.get("metadata", {}).get("action")
+
+        if action == "reset_history":
+            memory_store[self.user.identifier] = []
 
 
 class OpenAILangChainAdapter(LangChainAdapter):

@@ -95,3 +95,41 @@ const copilotEventHandler = async (event) => {
 }
 
 window.copilotEventHandler = copilotEventHandler
+
+document.addEventListener("DOMContentLoaded", () => {
+  const observer = new MutationObserver((mutations, obs) => {
+    const copilot = document.getElementById("chainlit-copilot")
+    const shadow = copilot.shadowRoot
+
+    const modal = shadow.getElementById("new-chat-dialog")
+    const confirmButton = shadow.getElementById("confirm")
+
+    if (modal && confirmButton && !confirmButton.dataset.hasHandler) {
+      const handler = async (event) => {
+        event.stopPropagation()
+
+        window.sendChainlitMessage({
+          type: "system_message",
+          output: "",
+          metadata: {
+            "action": "reset_history"
+          }
+        })
+
+        // remove this listener so we don’t fire again
+        confirmButton.removeEventListener("click", handler)
+
+        // trigger the original click (React handles it)
+        setTimeout(() => confirmButton.click(), 500)
+
+        // mark handler as attached to avoid duplicates
+        confirmButton.dataset.hasHandler = "true"
+      }
+
+      // attach the listener
+      confirmButton.addEventListener("click", handler)
+    }
+  })
+
+  observer.observe(document.body, { childList: true, subtree: true })
+});
