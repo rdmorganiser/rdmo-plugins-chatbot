@@ -98,7 +98,10 @@ class LangChainAdapter(BaseAdapter):
             action = message.get("metadata", {}).get("action")
 
         if action == "reset_history":
-            memory_store[self.user.identifier] = []
+            self.reset_history()
+
+    def reset_history(self):
+        memory_store[self.user.identifier] = []
 
 
 class OpenAILangChainAdapter(LangChainAdapter):

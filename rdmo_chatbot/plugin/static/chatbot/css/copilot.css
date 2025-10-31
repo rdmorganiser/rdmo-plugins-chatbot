@@ -1,3 +1,57 @@
+/* adust the width of the logo */
+
 .logo {
     width: 160px;
+}
+
+/* adust the avatar */
+
+.ai-message span:has(> img) {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+/* adust the input field (composer) of the copilot */
+
+#message-composer textarea {
+    font-size: 14px;
+}
+#message-composer button {
+    width: 24px !important;
+    height: 24px !important;
+}
+#message-composer button svg {
+    width: 22px !important;
+    height: 22px !important;
+}
+
+/* adust the starter buttons */
+
+#starters button p {
+    font-size: 14px;
+    line-height: 1.5em;
+}
+
+/* adust the new chat dialog buttons */
+
+#new-chat-dialog {
+    max-width: 40em;
+}
+#new-chat-dialog h2 {
+    font-size: 14px;
+}
+#new-chat-dialog p {
+    font-size: 14px;
+    line-height: 2rem;
+    margin-top: 1rem !important; /* prevents the buttons from jumping */
+    margin-bottom: 1rem !important;
+}
+#new-chat-dialog button {
+    font-size: 14px;
+}
+
+/* remove the watermark at the bottom of the copilot */
+
+.watermark {
+    display: none !important;
 }
