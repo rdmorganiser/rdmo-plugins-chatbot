@@ -112,7 +112,8 @@ document.addEventListener("DOMContentLoaded", () => {
           type: "system_message",
           output: "",
           metadata: {
-            "action": "reset_history"
+            "action": "reset_history",
+            "project": parseInt(projectId)
           }
         })
 

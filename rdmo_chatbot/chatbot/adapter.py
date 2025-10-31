@@ -49,23 +49,40 @@ class LangChainAdapter(BaseAdapter):
     def llm(self):
         raise NotImplementedError
 
-    @property
-    def user(self):
+    def get_user(self):
         return self.cl.user_session.get("user")
 
-    @property
-    def history(self):
-        return self.cl.user_session.get("history", [])
+    def get_project(self):
+        return self.cl.user_session.get("project")
+
+    def get_history(self, project):
+        return self.cl.user_session.get("history", {}).get(project, [])
+
+    def set_history(self, project, project_history):
+        # get the whole history dict and update the history for this project
+        history = self.cl.user_session.get("history", {})
+        history.update({
+            project: project_history
+        })
+
+        # update the history dict in the session
+        self.cl.user_session.set("history", history)
+
+        # update the history dict in the store
+        memory_store[self.get_user().identifier] = history
 
     async def on_chat_start(self):
-        history = memory_store.get(self.user.identifier, [])
+        history = memory_store.get(self.get_user().identifier, {})
         self.cl.user_session.set("history", history)
 
     async def on_user_message(self, message, context, stream=False):
+        project = context.get("id")
+        history = self.get_history(project)
+
         inputs = {
-            "system_prompt": self.config.SYSTEM_PROMPT.format(user=self.user.display_name),
+            "system_prompt": self.config.SYSTEM_PROMPT.format(user=self.get_user().display_name),
             "context": json.dumps(context),
-            "history": self.history,
+            "history": self.get_history(project),
             "content": message.content
         }
 
@@ -80,28 +97,24 @@ class LangChainAdapter(BaseAdapter):
             response_message = await self.cl.Message(content=response.content).send()
 
         # add messages to history
-        self.cl.user_session.set("history", [
-            *self.history,
+        self.set_history(project, [
+            *history,
             HumanMessage(content=message.content),
             AIMessage(content=response_message.content)
         ])
-
-        # persist memory
-        memory_store[self.user.identifier] = self.history
 
         return response_message
 
     async def on_system_message(self, message):
         try:
             action = message.metadata.get("action")
+            project = message.metadata.get("project")
         except AttributeError:
             action = message.get("metadata", {}).get("action")
+            project = None
 
         if action == "reset_history":
-            self.reset_history()
-
-    def reset_history(self):
-        memory_store[self.user.identifier] = []
+            self.set_history(project, [])
 
 
 class OpenAILangChainAdapter(LangChainAdapter):
