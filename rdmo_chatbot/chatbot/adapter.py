@@ -3,9 +3,26 @@ import json
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-from . import BaseAdapter
-
 memory_store = {}
+
+
+class BaseAdapter:
+    def __init__(self, cl, config):
+        self.cl = cl
+        self.config = config
+
+    async def on_chat_start(self):
+        pass
+
+    async def on_chat_end(self):
+        pass
+
+    async def on_chat_resume(self, thread):
+        pass
+
+    async def on_message(self, message):
+        raise NotImplementedError
+
 
 class LangChainAdapter(BaseAdapter):
     def __init__(self, cl, config):
