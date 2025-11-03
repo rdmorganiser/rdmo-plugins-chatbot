@@ -23,3 +23,11 @@ repos:
   rev: v1.33.1
   hooks:
   - id: typos
+    exclude: |
+      (?x)^(
+          rdmo_chatbot/locale/.*|
+          rdmo_chatbot/.*_de.txt$|
+          rdmo_chatbot/.*_es.txt$|
+          rdmo_chatbot/.*_fr.txt$|
+          rdmo_chatbot/.*_it.txt$|
+      )$

@@ -50,6 +50,32 @@
     font-size: 14px;
 }
 
+/* adjust the action buttons */
+
+.ai-message button {
+    font-size: 14px;
+    height: 1.5em;
+}
+.ai-message button svg {
+    width: 1em;
+    height: 1em;
+}
+.ai-message button:has(svg.lucide-check),
+.ai-message button:has(svg.lucide-x) {
+    height: 3em;
+}
+.ai-message button:has(svg.lucide-check) svg {
+    stroke: #198754;
+}
+.ai-message button:has(svg.lucide-x) svg {
+    stroke: #dc3545;
+}
+.ai-message button:has(svg.lucide-check) svg,
+.ai-message button:has(svg.lucide-x) svg {
+    width: 2em;
+    height: 2em;
+}
+
 /* remove the watermark at the bottom of the copilot */
 
 .watermark {

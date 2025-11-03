@@ -6,7 +6,11 @@ function truncate(string, maxLength = 32) {
   return string.length > maxLength ? string.slice(0, maxLength) + '…' : string;
 }
 
-const getContext = async (args) => {
+const getProjectId = async (args) => {
+  return projectId
+}
+
+const getProject = async (args) => {
   const url = `${baseUrl}/api/v1/chatbot/projects/${projectId}/`
 
   const response = await fetch(url, {
@@ -78,10 +82,16 @@ const setInput = async (args) => {
   }
 }
 
+const toggleCopilot = async (args) => {
+  window.toggleChainlitCopilot()
+}
+
 const handlers = {
-  getContext,
+  getProjectId,
+  getProject,
   getInputs,
-  setInput
+  setInput,
+  toggleCopilot
 }
 
 const copilotEventHandler = async (event) => {
