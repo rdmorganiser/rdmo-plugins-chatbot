@@ -6,6 +6,10 @@ function truncate(string, maxLength = 32) {
   return string.length > maxLength ? string.slice(0, maxLength) + '…' : string;
 }
 
+const getLangCode = async (args) => {
+  return language
+}
+
 const getProjectId = async (args) => {
   return projectId
 }
@@ -87,6 +91,7 @@ const toggleCopilot = async (args) => {
 }
 
 const handlers = {
+  getLangCode,
   getProjectId,
   getProject,
   getInputs,

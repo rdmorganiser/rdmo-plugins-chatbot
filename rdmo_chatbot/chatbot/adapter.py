@@ -75,19 +75,23 @@ class LangChainAdapter(BaseAdapter):
         memory_store[self.get_user().identifier] = history_store
 
     async def on_chat_start(self):
+        lang_code = await self.call_copilot("getLangCode")
         project_id = await self.call_copilot("getProjectId")
 
         history_store = memory_store.get(self.get_user().identifier, {})
         history = history_store.get(project_id , [])
 
+        self.cl.user_session.set("lang_code", lang_code)
         self.cl.user_session.set("project_id", project_id)
         self.cl.user_session.set("history", history)
 
         if history:
-            await self.cl.Message(content=self.config.CONTINUATION_EN).send()
+            content = getattr(self.config, f"CONTINUATION_{lang_code.upper()}", "")
+            await self.cl.Message(content=content).send()
         else:
             # if the history is empty, display the confirmation message
-            message = self.cl.AskActionMessage(content=self.config.CONFIRMATION_EN, actions=[
+            content = getattr(self.config, f"CONFIRMATION_{lang_code.upper()}", "")
+            message = self.cl.AskActionMessage(content=content, actions=[
                 self.cl.Action(name="confirmation", icon="check", label="", payload={"value": "confirmation"}),
                 self.cl.Action(name="leave", icon="x", label="", payload={"value": "leave"}),
             ])

@@ -36,6 +36,7 @@
     <script src="{% static 'chatbot/js/copilot.js' %}"></script>
     <script>
         window.mountChainlitWidget({
+            language: "{% chatbot_language %}",
             chainlitServer: "{{ settings.CHATBOT_URL }}",
             accessToken: "{% chatbot_token request.user %}",
             customCssUrl: "{% static 'chatbot/css/copilot.css' %}"
