@@ -36,6 +36,13 @@ You are a knowledgeable assistant specializing in writing data management plans 
 
 The name of the user is: {user}.
 '''
+
+CHATBOT_STREAM = True  # whether the responses should be streamed character by character from the llm
+
+CHATBOT_LANGUAGES = {
+    "en": "en-US",
+    "de": "de-DE"
+}
 ```
 
 ### Adapter
