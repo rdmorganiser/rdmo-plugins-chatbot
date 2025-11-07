@@ -12,6 +12,8 @@ rdmo_chatbot/chatbot/.files
 
 node_modules
 
+.aider*
+
 build
 dist
 *.egg-info

@@ -38,20 +38,11 @@ The name of the user is: {user}.
 '''
 ```
 
-For the `OpenAIAdapter` add:
+### Adapter
 
-```python
-CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.openai.OpenAIAdapter'
-CHATBOT_OPENAI_API_KEY = ''
-CHATBOT_OPENAI_BASE_URL = ''  # or None for the default OpenAI API
-CHATBOT_OPENAI_ARGS = {
-   "model": 'gpt-4.1-nano'
-}
-```
+The connection to the LLM is encapsulated using the adapter classes in `adapter.py`.
 
-and install the additional dependency with `pip install openai`.
-
-Alternatively, for the `OpenAILangChainAdapter`:
+For the `OpenAILangChainAdapter`:
 
 ```python
 CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OpenAILangChainAdapter'
@@ -75,17 +66,62 @@ CHATBOT_LLM_ARGS = {
 
 and install the additional dependencies with `pip install langchain langchain-ollama`.
 
-For starters use:
+### Storage
+
+In order to persist the chat messages, the history can be stored in one of the storage backends in `store.py`.
+
+For a simple in memory store, which will not persist when the server restarts use:
 
 ```python
-CHATBOT_STARTERS = [
-    {
-        'label': 'What is a DMP?',
-        'message': 'What is a Data Management Plan (DMP)? How can I create a Data Management Plan with RDMO?',
-        'icon': None
-    }
-]
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.LocMemStore'
 ```
+
+For Redis use, e.g.:
+
+```python
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.RedisStore'
+CHATBOT_STORE_CONNECTION = {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "db": 0
+}
+CHATBOT_STORE_TTL = 86400  # omit if not required
+```
+
+To store the messages in Sqlite use, e.g.:
+
+```python
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.Sqlite3Store'
+CHATBOT_STORE_CONNECTION = '/tmp/chatbot.sqlite3'  # path to the database
+```
+
+For PostgreSQL:
+
+```python
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.PostgresStore'
+CHATBOT_STORE_CONNECTION = {
+    'dbname': "rdmo_chatbot",
+    "user": "rdmo_chatbot",
+    "password": "<super secret>",
+    'host': '127.0.0.1',
+    "port": 5432,
+}
+```
+
+For MySQL or MariaDB:
+
+```python
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.MysqlStore'
+CHATBOT_STORE_CONNECTION = {
+    'db': "rdmo_chatbot",
+    'user': "rdmo_chatbot",
+    'passwd': "<super secret>",
+    'host': '127.0.0.1',
+    "port": 3306
+}
+```
+
+
 
 Deployment
 ----------

@@ -39,6 +39,9 @@ openai = [
 ollama = [
   "langchain-ollama",
 ]
+redis = [
+  "redis"
+]
 dev = [
     "build",
     "pre-commit",

@@ -47,13 +47,13 @@ def parse_context(raw_context):
     return json.loads(base64.b64decode(raw_context).decode())
 
 
-def messages_to_json(messages):
-    return json.dumps([message.dict() for message in messages])
+def messages_to_dicts(messages):
+    return [message.dict() for message in messages]
 
 
-def json_to_messages(json_string):
+def dicts_to_messages(dicts):
     messages = []
-    for message in json.loads(json_string):
+    for message in dicts:
         type = message.get("type")
         if type == "human":
             messages.append(HumanMessage(**message))
