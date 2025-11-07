@@ -25,13 +25,6 @@
     height: 22px !important;
 }
 
-/* adust the starter buttons */
-
-#starters button p {
-    font-size: 14px;
-    line-height: 1.5em;
-}
-
 /* adust the new chat dialog buttons */
 
 #new-chat-dialog {

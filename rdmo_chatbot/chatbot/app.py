@@ -46,8 +46,3 @@ async def on_transfer(action):
 @cl.on_logout
 async def on_logout(request, response):
     response.delete_cookie("chatbot_token")
-
-
-@cl.set_starters
-async def set_starters():
-    return [cl.Starter(**starter) for starter in config.STARTERS]

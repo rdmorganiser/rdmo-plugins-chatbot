@@ -128,8 +128,6 @@ CHATBOT_STORE_CONNECTION = {
 }
 ```
 
-
-
 Deployment
 ----------
 
