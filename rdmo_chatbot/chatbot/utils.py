@@ -13,11 +13,18 @@ def get_config():
     return SimpleNamespace(**json.loads(os.getenv("CHATBOT_CONFIG")))
 
 
-def get_adapter(cl, config):
+def get_store(config):
+    store_module_name, store_class_name = config.STORE.rsplit(".", 1)
+    store_module = importlib.import_module(store_module_name)
+    store_class = getattr(store_module, store_class_name)
+    return store_class()
+
+
+def get_adapter(config):
     adapter_module_name, adapter_class_name = config.ADAPTER.rsplit(".", 1)
     adapter_module = importlib.import_module(adapter_module_name)
     adapter_class = getattr(adapter_module, adapter_class_name)
-    return adapter_class(cl, config)
+    return adapter_class()
 
 
 def get_user(config, headers):

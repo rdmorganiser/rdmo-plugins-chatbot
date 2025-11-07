@@ -2,7 +2,7 @@ import chainlit as cl
 from utils import get_adapter, get_config, get_user
 
 config = get_config()
-adapter = get_adapter(cl, config)
+adapter = get_adapter(config)
 
 
 @cl.header_auth_callback

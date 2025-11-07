@@ -1,6 +1,6 @@
 const baseUrl = document.querySelector('meta[name="baseurl"]').content.replace(/\/+$/, '')
 const language = document.querySelector('meta[name="language"]').content
-const projectId = document.querySelector('meta[name="project"]').content
+const projectId = Number(document.querySelector('meta[name="project"]').content)
 
 function truncate(string, maxLength = 32) {
   return string.length > maxLength ? string.slice(0, maxLength) + '…' : string;
