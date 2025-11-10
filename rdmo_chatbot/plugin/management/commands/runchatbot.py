@@ -22,13 +22,14 @@ class Command(BaseCommand):
         parser.add_argument("--host", dest="host", default="localhost")
         parser.add_argument("--port", dest="port", default="8080")
         parser.add_argument("--root-path", dest="root-path", default=None)
+        parser.add_argument("--chainlit-path", dest="chainlit-path", default="chainlit")
 
     def handle(self, *args, **options):
         # find the path of the rdmo_chatbot directory
         chatbot_module = importlib.import_module("rdmo_chatbot.chatbot")
         chatbot_path = chatbot_module.__path__[0]
 
-        chatbot_args = ["chainlit", "run", "app.py", "--headless"] + [
+        chatbot_args = [options["chainlit-path"], "run", "app.py", "--headless"] + [
             f"--{key}" if value is True else f"--{key}={value}"
             for key, value in options.items()
             if key in ["watch", "debug", "host", "port", "root-path"] and value
