@@ -128,6 +128,17 @@ CHATBOT_STORE_CONNECTION = {
 }
 ```
 
+## Theme
+
+In order to customize the chatbot the `.chainlit` and `public` have to be copied and adjusted and `CHATBOT_PATH` has to be set in `config/settings/local.py`:
+
+```
+CHATBOT_PATH = '/path/to/chainlit/workdir/'
+```
+
+Most files in `public` can be updated. `custom.js` and `elements/InputSelect.jsx` should be kept as they are. The chainlit config can be found in `.chainlit/config.toml`.
+
+
 Deployment
 ----------
 
