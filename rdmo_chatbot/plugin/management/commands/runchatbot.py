@@ -29,7 +29,10 @@ class Command(BaseCommand):
         chatbot_module = importlib.import_module("rdmo_chatbot.chatbot")
         chatbot_path = chatbot_module.__path__[0]
 
-        chatbot_args = [options["chainlit-path"], "run", "app.py", "--headless"] + [
+        chainlit_path = options["chainlit-path"]
+        chainlit_app_path = Path(chatbot_path) / "app.py"
+
+        chatbot_args = [chainlit_path, "run", chainlit_app_path, "--headless"] + [
             f"--{key}" if value is True else f"--{key}={value}"
             for key, value in options.items()
             if key in ["watch", "debug", "host", "port", "root-path"] and value
@@ -51,6 +54,8 @@ class Command(BaseCommand):
                 except TemplateDoesNotExist:
                     pass
 
+        chatbot_cwd = getattr(settings, "CHATBOT_PATH", None) or chatbot_path
+
         chatbot_env = os.environ.copy()
         chatbot_env["PYTHONPATH"] = Path.cwd()
         chatbot_env["CHAINLIT_AUTH_SECRET"] = settings.CHATBOT_AUTH_SECRET
@@ -58,6 +63,6 @@ class Command(BaseCommand):
 
         subprocess.check_call(
             chatbot_args,
-            cwd=chatbot_path,
+            cwd=chatbot_cwd,
             env=chatbot_env
         )
