@@ -43,6 +43,11 @@ async def on_transfer(action):
     await adapter.on_transfer(action)
 
 
+@cl.action_callback("on_contact")
+async def on_contact(action):
+    await adapter.on_contact(action)
+
+
 @cl.on_logout
 async def on_logout(request, response):
     response.delete_cookie("chatbot_token")

@@ -90,13 +90,38 @@ const toggleCopilot = async (args) => {
   window.toggleChainlitCopilot()
 }
 
+const sendMail = async (args) => {
+  const url = `${baseUrl}/api/v1/projects/projects/${projectId}/contact/`
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  const data = await response.json()
+
+  // append history to message
+  data.message += '\nChatbot history:\n\n```\n' + JSON.stringify(args.payload.history, null, 2) + '\n```'
+
+  await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': Cookies.get('csrftoken')
+    }
+  })
+}
+
 const handlers = {
   getLangCode,
   getProjectId,
   getProject,
   getInputs,
   setInput,
-  toggleCopilot
+  toggleCopilot,
+  sendMail
 }
 
 const copilotEventHandler = async (event) => {

@@ -3,7 +3,7 @@ import json
 import chainlit as cl
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from utils import get_config, get_store
+from utils import get_config, get_store, messages_to_dicts
 
 config = get_config()
 store = get_store(config)
@@ -119,6 +119,9 @@ class LangChainAdapter(BaseAdapter):
         response_message.actions = [
             cl.Action(name="on_transfer", icon="file-output", payload={
                 "content": response_message.content
+            }),
+            cl.Action(name="on_contact", icon="mail", payload={
+                "history": messages_to_dicts(history)
             })
         ]
 
@@ -165,8 +168,27 @@ class LangChainAdapter(BaseAdapter):
         ask_response = await ask_message.send()
         ask_response.update(action.payload)
 
+        await ask_message.remove()
+
         if ask_response and ask_response.get("submitted"):
             await self.call_copilot("setInput", args=ask_response)
+
+    async def on_contact(self, action):
+        lang_code = cl.user_session.get("lang_code", "en")
+
+        content = getattr(config, f"CONTACT_{lang_code.upper()}", "")
+
+        ask_message = cl.AskActionMessage(content=content, actions=[
+            cl.Action(name="submit", icon="check", label="", payload=action.payload),
+            cl.Action(name="cancel", icon="x", label="", payload={}),
+        ])
+
+        ask_response = await ask_message.send()
+
+        await ask_message.remove()
+
+        if ask_response and ask_response.get("name") == "submit":
+            await self.call_copilot("sendMail", args=ask_response)
 
 
 class OpenAILangChainAdapter(LangChainAdapter):
