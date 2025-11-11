@@ -40,6 +40,8 @@ class Command(BaseCommand):
 
         self.copy(".chainlit")
         self.copy("chainlit.md")
+        self.copy("chainlit_en-US.md")
+        self.copy("chainlit_de-DE.md")
         self.copy("public")
 
         print("Done")
