@@ -19,10 +19,10 @@ pip install -e rdmo-plugins-chatbot[ollama]  # alternatively
 Add the following to your `config/settings/local.py`:
 
 ```python
-INSTALLED_APPS = ['rdmo_chatbot', *INSTALLED_APPS]
+INSTALLED_APPS = ['rdmo_chatbot.plugin', *INSTALLED_APPS]
 SETTINGS_EXPORT += ['CHATBOT_URL']
 
-MIDDLEWARE.append('rdmo_chatbot.middleware.ChatbotMiddleware')
+MIDDLEWARE.append('rdmo_chatbot.plugin.middleware.ChatbotMiddleware')
 
 CHATBOT_URL = 'http://localhost:8080'
 CHATBOT_AUTH_SECRET = ''  # secret long random string
@@ -44,6 +44,11 @@ CHATBOT_LANGUAGES = {
     "de": "de-DE"
 }
 ```
+In addition, the chatbot endpoint needs to be added to the `config/urls.py`
+
+```python
+urlpatterns += [path("api/v1/chatbot/", include("rdmo_chatbot.plugin.urls"))]
+```
 
 ### Adapter
 
@@ -55,7 +60,7 @@ For the `OpenAILangChainAdapter`:
 CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OpenAILangChainAdapter'
 CHATBOT_LLM_ARGS = {
    "openai_api_key": '',
-   "openai_api_base": ''  # or None for the default OpenAI API
+   "openai_api_base": '',  # or None for the default OpenAI API
    "model": 'gpt-4.1-nano'
 }
 ```
@@ -65,7 +70,7 @@ and install the additional dependencies with `pip install langchain langchain-op
 Alternatively, for the `OllamaLangChainAdapter`:
 
 ```python
-CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.langchain.OllamaLangChainAdapter'
+CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.OllamaLangChainAdapter'
 CHATBOT_LLM_ARGS = {
     "model": 'mistral:7b'
 }
