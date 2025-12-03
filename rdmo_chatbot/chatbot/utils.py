@@ -52,11 +52,13 @@ def messages_to_dicts(messages):
 
 
 def dicts_to_messages(dicts):
+    if type(dicts) is str:
+        dicts = json.loads(dicts)
     messages = []
     for message in dicts:
-        type = message.get("type")
-        if type == "human":
+        _type = message.get("type")
+        if _type == "human":
             messages.append(HumanMessage(**message))
-        elif type == "ai":
+        elif _type == "ai":
             messages.append(AIMessage(**message))
     return messages
