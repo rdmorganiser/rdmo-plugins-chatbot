@@ -43,10 +43,7 @@ class Sqlite3Store(BaseStore):
         result = self.cursor.fetchone()
         if not result or result[0] is None:
             return []
-        breakpoint()
-        if type(result[0]) is str:
-            message_dicts = json.loads(result[0])
-        return dicts_to_messages(result[0]) if result else []
+        return dicts_to_messages(json.loads(result[0]))
 
     def set_history(self, user_identifier, project_id, messages):
         self.cursor.execute("""

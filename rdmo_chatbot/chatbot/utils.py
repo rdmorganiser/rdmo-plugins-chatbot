@@ -52,8 +52,6 @@ def messages_to_dicts(messages):
 
 
 def dicts_to_messages(dicts):
-    if type(dicts) is str:
-        dicts = json.loads(dicts)
     messages = []
     for message in dicts:
         _type = message.get("type")
