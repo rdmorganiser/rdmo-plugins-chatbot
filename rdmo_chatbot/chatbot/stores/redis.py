@@ -2,6 +2,7 @@ import json
 
 from .base import BaseStore
 from . import config
+from ..utils import dicts_to_messages, messages_to_dicts
 
 import redis
 

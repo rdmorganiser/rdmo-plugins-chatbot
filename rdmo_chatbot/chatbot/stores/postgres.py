@@ -2,8 +2,10 @@ import json
 
 from .base import BaseStore
 from . import config
+from ..utils import messages_to_dicts, dicts_to_messages
 
 import psycopg
+
 
 class PostgresStore(BaseStore):
     def __init__(self):
