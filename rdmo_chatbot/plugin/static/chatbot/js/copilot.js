@@ -126,7 +126,7 @@ const openContactModal = async (args) => {
   const contactData = await response.json()
   const contactModal = document.getElementById('chatbot-contact-modal')
 
-  const chatHistory = args?.history ? '\n\n' + gettext('Chat history:') + '\n\n' + (
+  const chatHistory = args?.history ? '\n\n' + gettext('Chat history') + ':' + '\n\n' + (
     args.history.reduce((s,m) => s + `[${m.type}] ${m.content} \n`, '')
   ) : ''
 

@@ -25,7 +25,7 @@ repos:
   - id: typos
     exclude: |
       (?x)^(
-          rdmo_chatbot/locale/.*|
+          rdmo_chatbot/plugin/locale/.*|
           rdmo_chatbot/.*_de.txt$|
           rdmo_chatbot/.*_es.txt$|
           rdmo_chatbot/.*_fr.txt$|
