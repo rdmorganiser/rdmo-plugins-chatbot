@@ -58,14 +58,17 @@ const handleTransfer = async (args) => {
   buttons.style.bottom = 0
   buttons.style.left = 0
   buttons.style.zIndex = 1050
+  buttons.addEventListener('click', () => {
+    document.getElementById('chatbot-backdrop').remove()
+    document.getElementById('chatbot-buttons').remove()
+  })
 
   document.body.appendChild(buttons)
 
-  const paddingTop = 6
-  const paddingRight = 6
-
   inputs.forEach(input => {
     const rect = input.getBoundingClientRect();
+    const paddingTop = input.classList.contains('input-sm') ? 4 : 6
+    const paddingRight = 6
 
     const buttonWrapper = document.createElement('div')
     buttonWrapper.classList.add('text-right')
@@ -88,7 +91,8 @@ const handleTransfer = async (args) => {
 
     const appendButton = document.createElement('button');
     appendButton.textContent = gettext('Append')
-    appendButton.classList.add('btn', 'btn-success', 'btn-xs', 'ml-10')
+    appendButton.classList.add('btn', 'btn-success', 'btn-xs')
+    appendButton.style.marginLeft = '6px'
     appendButton.style.pointerEvents = 'auto'  // allow the button to be clicked
     appendButton.addEventListener('click', () => setInput(input, args.content, true));
 
@@ -111,8 +115,8 @@ const setInput = async (input, content, append) => {
   }
   input.dispatchEvent(new Event('input', { bubbles: true }))
 
-  document.getElementById('chatbot-backdrop').remove()
-  document.getElementById('chatbot-buttons').remove()
+  // document.getElementById('chatbot-backdrop').remove()
+  // document.getElementById('chatbot-buttons').remove()
 }
 
 const openContactModal = async (args) => {
@@ -181,6 +185,8 @@ const copilotEventHandler = async (event) => {
 window.copilotEventHandler = copilotEventHandler
 
 document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => handleTransfer({'content': 'x'}), 1000)
+
   const observer = new MutationObserver((mutations, obs) => {
     const copilot = document.getElementById("chainlit-copilot")
     const shadow = copilot.shadowRoot
