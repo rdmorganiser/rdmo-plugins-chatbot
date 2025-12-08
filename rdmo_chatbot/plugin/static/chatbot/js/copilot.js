@@ -29,68 +29,93 @@ const getProject = async (args) => {
   return data
 }
 
-const getInputs = async (args) => {
-  const questions = document.querySelectorAll('.interview-question')
-
-  return Array.from(questions).map((question, questionIndex) => {
-    const text = question.querySelector('.interview-question-text')
-    const widgets = question.querySelectorAll('.interview-widget')
-
-    return {
-      index: questionIndex,
-      text: text.textContent.trim(),
-      widgets: Array.from(widgets).reduce((inputs, widget, widgetIndex) => {
-        const input = widget.querySelector('input[type="text"], textarea')
-
-        if (input) {
-          return [...inputs, { index: widgetIndex, value: truncate(input.value)}]
-        } else {
-          return inputs
-        }
-      }, [])
-    }
-  })
-}
-
-const setInput = async (args) => {
-  const questions = document.querySelectorAll('.interview-question')
-  const question = questions[args.questionIndex]
-
-  if (question) {
-    const widgets = question.querySelectorAll('.interview-widget')
-    const widget = widgets[args.widgetIndex]
-    if (widget) {
-      const input = widget.querySelector('input[type="text"], textarea')
-      if (input) {
-        console.log(input, args)
-
-        const lastValue = input.value
-
-        if (args.action == 'append') {
-          input.value = input.value + ' ' + args.content
-        } else if (args.action == 'replace') {
-          input.value = args.content
-        }
-
-        // the following is needed for react to pick up the change
-        if (input._valueTracker) {
-          input._valueTracker.setValue(lastValue)
-        }
-        input.dispatchEvent(new Event('input', { bubbles: true }))
-      }
-    } else {
-      console.warn('no widget found')
-    }
-  } else {
-    console.warn('no question found')
-  }
-}
-
 const toggleCopilot = async (args) => {
   window.toggleChainlitCopilot()
 }
 
-const sendMail = async (args) => {
+const handleTransfer = async (args) => {
+  const questions = document.querySelectorAll('.interview-question')
+
+  const inputs = Array.from(questions).reduce((inputs, question) => {
+    const widgets = question.querySelectorAll('.interview-widget')
+    return Array.from(widgets).reduce((inputs, widget) => {
+      const input = widget.querySelector('input[type="text"], textarea')
+      return input ? [...inputs, input] : inputs
+    }, inputs)
+  }, [])
+
+  const backdrop = document.createElement('div')
+  backdrop.id = 'chatbot-backdrop'
+  backdrop.innerHTML = '<div class="fade modal-backdrop in"></div>'
+
+  document.body.appendChild(backdrop)
+
+  const buttons = document.createElement('div')
+  buttons.id = 'chatbot-buttons'
+  buttons.style.position = 'absolute'
+  buttons.style.top = 0
+  buttons.style.right = 0
+  buttons.style.bottom = 0
+  buttons.style.left = 0
+  buttons.style.zIndex = 1050
+
+  document.body.appendChild(buttons)
+
+  const paddingTop = 6
+  const paddingRight = 6
+
+  inputs.forEach(input => {
+    const rect = input.getBoundingClientRect();
+
+    const buttonWrapper = document.createElement('div')
+    buttonWrapper.classList.add('text-right')
+    buttonWrapper.style.position = 'absolute'
+    buttonWrapper.style.zIndex = 1050
+    buttonWrapper.style.top = rect.top + paddingTop + window.scrollY + 'px'
+    buttonWrapper.style.left = rect.left - paddingRight + window.scrollX + 'px'
+    buttonWrapper.style.width = rect.width + 'px'
+    buttonWrapper.style.height = rect.height + 'px'
+
+    buttons.appendChild(buttonWrapper);
+
+    const replaceButton = document.createElement('button');
+    replaceButton.textContent = gettext('Replace')
+    replaceButton.classList.add('btn', 'btn-danger', 'btn-xs')
+    replaceButton.style.pointerEvents = 'auto'  // allow the button to be clicked
+    replaceButton.addEventListener('click', () => setInput(input, args.content, false));
+
+    buttonWrapper.appendChild(replaceButton);
+
+    const appendButton = document.createElement('button');
+    appendButton.textContent = gettext('Append')
+    appendButton.classList.add('btn', 'btn-success', 'btn-xs', 'ml-10')
+    appendButton.style.pointerEvents = 'auto'  // allow the button to be clicked
+    appendButton.addEventListener('click', () => setInput(input, args.content, true));
+
+    buttonWrapper.appendChild(appendButton)
+  })
+}
+
+const setInput = async (input, content, append) => {
+  const lastValue = input.value
+
+  if (append) {
+    input.value = input.value + ' ' + content
+  } else {
+    input.value = content
+  }
+
+  // the following is needed for react to pick up the change
+  if (input._valueTracker) {
+    input._valueTracker.setValue(lastValue)
+  }
+  input.dispatchEvent(new Event('input', { bubbles: true }))
+
+  document.getElementById('chatbot-backdrop').remove()
+  document.getElementById('chatbot-buttons').remove()
+}
+
+const openContactModal = async (args) => {
   const url = `${baseUrl}/api/v1/projects/projects/${projectId}/contact/`
   const response = await fetch(url, {
     method: 'GET',
@@ -98,30 +123,49 @@ const sendMail = async (args) => {
       'Content-Type': 'application/json'
     }
   })
+  const contactData = await response.json()
+  const contactModal = document.getElementById('chatbot-contact-modal')
 
-  const data = await response.json()
+  const chatHistory = args?.history ? '\n\n' + gettext('Chat history:') + '\n\n' + (
+    args.history.reduce((s,m) => s + `[${m.type}] ${m.content} \n`, '')
+  ) : ''
 
-  // append history to message
-  data.message += '\nChatbot history:\n\n```\n' + JSON.stringify(args.payload.history, null, 2) + '\n```'
+  const subjectInput = contactModal.querySelector('#chatbot-contact-subject')
+  const messageInput = contactModal.querySelector('#chatbot-contact-message')
 
-  await fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': Cookies.get('csrftoken')
+  subjectInput.value = contactData.subject
+  messageInput.value = contactData.message + chatHistory
+
+  const submitButton = contactModal.querySelector('#chatbot-contact-submit')
+
+  $(submitButton).click(async () => {
+    const payload = {
+      subject: subjectInput.value,
+      message: messageInput.value
     }
+
+    await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': Cookies.get('csrftoken')
+      }
+    })
+
+    $(contactModal).modal('hide')
   })
+
+  $(contactModal).modal('show')
 }
 
 const handlers = {
   getLangCode,
   getProjectId,
   getProject,
-  getInputs,
-  setInput,
   toggleCopilot,
-  sendMail
+  handleTransfer,
+  openContactModal
 }
 
 const copilotEventHandler = async (event) => {

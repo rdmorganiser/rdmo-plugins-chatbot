@@ -150,46 +150,10 @@ class LangChainAdapter(BaseAdapter):
             store.reset_history(user.identifier, project_id)
 
     async def on_transfer(self, action):
-        inputs = await self.call_copilot("getInputs", default={})
-
-        element = cl.CustomElement(
-            name="InputSelect",
-            display="inline",
-            props={
-                "inputs": inputs
-            }
-        )
-
-        ask_message = cl.AskElementMessage(
-            content="Where should I add the content?",
-            element=element,
-            timeout=60
-        )
-
-        ask_response = await ask_message.send()
-        ask_response.update(action.payload)
-
-        await ask_message.remove()
-
-        if ask_response and ask_response.get("submitted"):
-            await self.call_copilot("setInput", args=ask_response)
+        await self.call_copilot("handleTransfer", args=action.payload)
 
     async def on_contact(self, action):
-        lang_code = cl.user_session.get("lang_code", "en")
-
-        content = getattr(config, f"CONTACT_{lang_code.upper()}", "")
-
-        ask_message = cl.AskActionMessage(content=content, actions=[
-            cl.Action(name="submit", icon="check", label="", payload=action.payload),
-            cl.Action(name="cancel", icon="x", label="", payload={}),
-        ])
-
-        ask_response = await ask_message.send()
-
-        await ask_message.remove()
-
-        if ask_response and ask_response.get("name") == "submit":
-            await self.call_copilot("sendMail", args=ask_response)
+        await self.call_copilot("openContactModal", args=action.payload)
 
 
 class OpenAILangChainAdapter(LangChainAdapter):

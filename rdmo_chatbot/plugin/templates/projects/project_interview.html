@@ -32,6 +32,8 @@
 {% endblock %}
 
 {% block extra_body %}
+    {% include 'chatbot/contact_modal.html' %}
+
     <script src="{{ settings.CHATBOT_URL }}/copilot/index.js"></script>
     <script src="{% static 'chatbot/js/copilot.js' %}"></script>
     <script>
