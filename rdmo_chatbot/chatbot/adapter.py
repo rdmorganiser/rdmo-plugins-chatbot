@@ -8,6 +8,7 @@ from utils import get_config, get_store, messages_to_dicts
 config = get_config()
 store = get_store(config)
 
+
 class BaseAdapter:
 
     async def call_copilot(self, name, args={}, default=None):

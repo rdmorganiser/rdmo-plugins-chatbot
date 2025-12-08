@@ -1,10 +1,12 @@
 import json
 
-from .base import BaseStore
-from . import config
-from ..utils import dicts_to_messages, messages_to_dicts
-
 import redis
+
+from ..utils import dicts_to_messages, get_config, messages_to_dicts
+from .base import BaseStore
+
+config = get_config()
+
 
 class RedisStore(BaseStore):
     def __init__(self):
@@ -17,7 +19,6 @@ class RedisStore(BaseStore):
     def get_history(self, user_identifier, project_id):
         key = f"history:{user_identifier}:{project_id}"
         history_json = self.redis_client.get(key)
-        breakpoint()
         return dicts_to_messages(json.loads(history_json)) if history_json else []
 
     def set_history(self, user_identifier, project_id, history):

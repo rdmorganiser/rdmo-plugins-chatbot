@@ -54,9 +54,9 @@ def messages_to_dicts(messages):
 def dicts_to_messages(dicts):
     messages = []
     for message in dicts:
-        _type = message.get("type")
-        if _type == "human":
+        message_type = message.get("type")
+        if message_type == "human":
             messages.append(HumanMessage(**message))
-        elif _type == "ai":
+        elif message_type == "ai":
             messages.append(AIMessage(**message))
     return messages

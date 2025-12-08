@@ -1,10 +1,11 @@
 import json
 
-from .base import BaseStore
-from . import config
-from ..utils import messages_to_dicts, dicts_to_messages
-
 import psycopg
+
+from ..utils import dicts_to_messages, get_config, messages_to_dicts
+from .base import BaseStore
+
+config = get_config()
 
 
 class PostgresStore(BaseStore):
