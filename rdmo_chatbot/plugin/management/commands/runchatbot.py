@@ -46,7 +46,7 @@ class Command(BaseCommand):
 
         # add templates to config
         for lang_code, _, _ in get_languages():
-            for key in ["confirmation", "contact", "continuation"]:
+            for key in ["confirmation", "start", "continuation"]:
                 template_name = f"chatbot/chatbot_{key}_{lang_code}.txt"
                 try:
                     rendered_template  = render_to_string(template_name)

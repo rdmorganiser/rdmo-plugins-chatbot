@@ -80,8 +80,11 @@ class LangChainAdapter(BaseAdapter):
             await message.remove()
 
             if response and response.get("payload").get("value") == "confirmation":
-                empty_message = cl.Message(content="")
-                await self.on_user_message(empty_message)
+                content = getattr(config, f"START_{lang_code.upper()}", "").strip()
+                store.set_history(user.identifier, project_id, [
+                    AIMessage(content=content)
+                ])
+                await cl.Message(content=content).send()
             else:
                 await self.call_copilot("toggleCopilot")
 
@@ -153,7 +156,16 @@ class LangChainAdapter(BaseAdapter):
         await self.call_copilot("handleTransfer", args=action.payload)
 
     async def on_contact(self, action):
-        await self.call_copilot("openContactModal", args=action.payload)
+        # get user and project_id from the session
+        user = cl.user_session.get("user")
+        project_id = cl.user_session.get("project_id")
+
+        # get the history from the store
+        history = store.get_history(user.identifier, project_id)
+
+        await self.call_copilot("openContactModal", args={
+            "history": messages_to_dicts(history)
+        })
 
 
 class OpenAILangChainAdapter(LangChainAdapter):

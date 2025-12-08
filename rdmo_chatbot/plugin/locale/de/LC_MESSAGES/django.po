@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-08 14:29+0100\n"
-"PO-Revision-Date: 2025-12-08 14:29+0100\n"
+"POT-Creation-Date: 2025-12-08 15:27+0100\n"
+"PO-Revision-Date: 2025-12-08 15:28+0100\n"
 "Last-Translator: Jochen Klar <mail@jochenklar.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -24,10 +24,12 @@ msgstr "Support kontaktieren"
 
 #: templates/chatbot/contact_modal.html:14
 #, python-format
-msgid "You can use this form to send an email to the %(site_name)s support."
+msgid ""
+"You can email your chat history the %(site_name)s support for further "
+"assistance."
 msgstr ""
-"Mit diesem Formular können Sie eine E-Mail an den Support von %(site_name)s "
-"senden."
+"Sie können Ihren Chatverlauf per E-Mail an den Support von %(site_name)s "
+"senden, um weitere Unterstützung zu erhalten."
 
 #: templates/chatbot/contact_modal.html:21
 msgid "Subject"
