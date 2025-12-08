@@ -185,8 +185,6 @@ const copilotEventHandler = async (event) => {
 window.copilotEventHandler = copilotEventHandler
 
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(() => handleTransfer({'content': 'x'}), 1000)
-
   const observer = new MutationObserver((mutations, obs) => {
     const copilot = document.getElementById("chainlit-copilot")
     const shadow = copilot.shadowRoot
