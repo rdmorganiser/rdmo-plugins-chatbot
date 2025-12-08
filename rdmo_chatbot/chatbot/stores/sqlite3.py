@@ -2,7 +2,7 @@ import json
 import sqlite3
 
 from ..utils import dicts_to_messages, get_config, messages_to_dicts
-from .base import BaseStore
+from . import BaseStore
 
 config = get_config()
 

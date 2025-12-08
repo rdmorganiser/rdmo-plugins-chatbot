@@ -85,13 +85,13 @@ In order to persist the chat messages, the history can be stored in one of the s
 For a simple in memory store, which will not persist when the server restarts use:
 
 ```python
-CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.LocMemStore'
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.locmem.LocMemStore'
 ```
 
 For Redis use, e.g.:
 
 ```python
-CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.RedisStore'
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.redis.RedisStore'
 CHATBOT_STORE_CONNECTION = {
     "host": "127.0.0.1",
     "port": 6379,
@@ -103,14 +103,14 @@ CHATBOT_STORE_TTL = 86400  # omit if not required
 To store the messages in Sqlite use, e.g.:
 
 ```python
-CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.Sqlite3Store'
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.sqlite3.Sqlite3Store'
 CHATBOT_STORE_CONNECTION = '/tmp/chatbot.sqlite3'  # path to the database
 ```
 
 For PostgreSQL:
 
 ```python
-CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.PostgresStore'
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.postgres.PostgresStore'
 CHATBOT_STORE_CONNECTION = {
     'dbname': "rdmo_chatbot",
     "user": "rdmo_chatbot",
@@ -123,7 +123,7 @@ CHATBOT_STORE_CONNECTION = {
 For MySQL or MariaDB:
 
 ```python
-CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.MysqlStore'
+CHATBOT_STORE = 'rdmo_chatbot.chatbot.store.mysql.MysqlStore'
 CHATBOT_STORE_CONNECTION = {
     'db': "rdmo_chatbot",
     'user': "rdmo_chatbot",

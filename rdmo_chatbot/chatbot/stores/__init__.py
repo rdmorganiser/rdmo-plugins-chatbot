@@ -1,6 +1,13 @@
-# ruff: noqa: F401
-from .locmem import LocMemStore
-from .mysql import MysqlStore
-from .postgres import PostgresStore
-from .redis import RedisStore
-from .sqlite3 import Sqlite3Store
+class BaseStore:
+
+    def has_history(self, user_identifier, project_id):
+        raise NotImplementedError
+
+    def get_history(self, user_identifier, project_id):
+        raise NotImplementedError
+
+    def set_history(self, user_identifier, project_id, history):
+        raise NotImplementedError
+
+    def reset_history(self, user_identifier, project_id):
+        raise NotImplementedError

@@ -1,4 +1,4 @@
-from .base import BaseStore
+from . import BaseStore
 
 
 class LocMemStore(BaseStore):
