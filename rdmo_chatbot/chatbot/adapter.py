@@ -11,11 +11,16 @@ store = get_store(config)
 
 class BaseAdapter:
 
-    async def call_copilot(self, name, args={}, default=None):
-        return_value = default
-        if cl.context.session.client_type == "copilot":
-            return_value = await cl.CopilotFunction(name=name, args=args).acall()
-        return return_value
+    async def call_copilot(self, name: str, fallback = None, **kwargs):
+        if cl.context.session.client_type != "copilot":
+            return fallback
+
+        try:
+            result = await cl.CopilotFunction(name=name, args=kwargs).acall()
+        except Exception:
+            return fallback
+
+        return fallback if result is None else result
 
     async def on_chat_start(self):
         pass
@@ -62,7 +67,7 @@ class LangChainAdapter(BaseAdapter):
         cl.user_session.set("project_id", project_id)
 
         # get lang_code from the copilot and store it in the session
-        lang_code = await self.call_copilot("getLangCode", default="en")
+        lang_code = await self.call_copilot("getLangCode", fallback="en")
         cl.user_session.set("lang_code", lang_code)
 
         # check if we have a history, yet
@@ -93,7 +98,8 @@ class LangChainAdapter(BaseAdapter):
         user = cl.user_session.get("user")
 
         # get the full project from the copilot
-        project = await self.call_copilot("getProject", default={})
+        project = await self.call_copilot("getProject")
+        project = project if isinstance(project, dict) else {}
         project_id = project.get("id")
 
         # get the history from the store
@@ -153,7 +159,7 @@ class LangChainAdapter(BaseAdapter):
             store.reset_history(user.identifier, project_id)
 
     async def on_transfer(self, action):
-        await self.call_copilot("handleTransfer", args=action.payload)
+        await self.call_copilot("handleTransfer", **action.payload)
 
     async def on_contact(self, action):
         # get user and project_id from the session
@@ -163,9 +169,7 @@ class LangChainAdapter(BaseAdapter):
         # get the history from the store
         history = store.get_history(user.identifier, project_id)
 
-        await self.call_copilot("openContactModal", args={
-            "history": messages_to_dicts(history)
-        })
+        await self.call_copilot("openContactModal", history=messages_to_dicts(history))
 
 
 class OpenAILangChainAdapter(LangChainAdapter):
