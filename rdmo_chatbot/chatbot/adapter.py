@@ -74,6 +74,8 @@ class LangChainAdapter(BaseAdapter):
         if store.has_history(user.identifier, project_id):
             content = getattr(config, f"CONTINUATION_{lang_code.upper()}", "")
             await cl.Message(content=content).send()
+            history = store.get_history(user.identifier, project_id)
+            await self.send_history(history, user)
         else:
             # if the history is empty, display the confirmation message
             content = getattr(config, f"CONFIRMATION_{lang_code.upper()}", "")
@@ -146,6 +148,19 @@ class LangChainAdapter(BaseAdapter):
         ])
 
         return response_message
+
+    async def send_history(self, history, user):
+        assistant_name = getattr(config, "ASSISTANT_NAME", "Assistant")
+
+        for message in history:
+            if isinstance(message, HumanMessage):
+                author = user.display_name or "You"
+            elif isinstance(message, AIMessage):
+                author = assistant_name
+            else:
+                continue
+
+            await cl.Message(content=message.content, author=author).send()
 
     async def on_system_message(self, message):
         try:
