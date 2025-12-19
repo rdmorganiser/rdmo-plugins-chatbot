@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from django import template
 from django.conf import settings
@@ -15,7 +15,7 @@ def get_chatbot_token(user):
         "identifier": user.username,
         "display_name": get_full_name(user),
         "metadata": {},
-        "exp": datetime.now(UTC) + timedelta(minutes=60 * 24),
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=60 * 24),
     }
 
     return jwt.encode(token_data, settings.CHATBOT_AUTH_SECRET, algorithm="HS256")

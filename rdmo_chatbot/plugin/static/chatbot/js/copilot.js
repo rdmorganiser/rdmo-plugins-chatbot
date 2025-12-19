@@ -6,6 +6,15 @@ function truncate(string, maxLength = 32) {
   return string.length > maxLength ? string.slice(0, maxLength) + '…' : string;
 }
 
+const getCookie = (name) => {
+  return document.cookie
+    .split(';')
+    .map((cookie) => cookie.trim())
+    .filter((cookie) => cookie.startsWith(`${name}=`))
+    .map((cookie) => decodeURIComponent(cookie.split('=')[1]))
+    .shift()
+}
+
 const getLangCode = async (args) => {
   return language
 }
@@ -142,22 +151,34 @@ const openContactModal = async (args) => {
 
   const submitButton = contactModal.querySelector('#chatbot-contact-submit')
 
-  $(submitButton).click(async () => {
-    const payload = {
-      subject: subjectInput.value,
-      message: messageInput.value
-    }
+  $(submitButton).off('click').on('click', async () => {
+    submitButton.disabled = true
 
-    await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': Cookies.get('csrftoken')
+    try {
+      const payload = {
+        subject: subjectInput.value,
+        message: messageInput.value
       }
-    })
 
-    $(contactModal).modal('hide')
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to send contact email (${response.status})`)
+      }
+
+      $(contactModal).modal('hide')
+    } catch (error) {
+      console.error(error)
+    } finally {
+      submitButton.disabled = false
+    }
   })
 
   $(contactModal).modal('show')
@@ -184,41 +205,124 @@ const copilotEventHandler = async (event) => {
 
 window.copilotEventHandler = copilotEventHandler
 
-document.addEventListener("DOMContentLoaded", () => {
-  const observer = new MutationObserver((mutations, obs) => {
-    const copilot = document.getElementById("chainlit-copilot")
-    const shadow = copilot.shadowRoot
+const observedShadows = new WeakSet()
 
-    const modal = shadow.getElementById("new-chat-dialog")
-    const confirmButton = shadow.getElementById("confirm")
+const ensureDialogAccessibility = ({
+  container,
+  titleText,
+  descriptionText,
+  titleId,
+  descriptionId
+}) => {
+  if (!container) {
+    return
+  }
 
-    if (modal && confirmButton && !confirmButton.dataset.hasHandler) {
-      const handler = async (event) => {
-        event.stopPropagation()
+  const resolvedTitleId = titleId || `${container.id || 'dialog'}-title`
+  const resolvedDescriptionId =
+    descriptionId || `${container.id || 'dialog'}-description`
 
+  if (!container.querySelector(`#${resolvedTitleId}`)) {
+    const dialogTitle = document.createElement('h2')
+    dialogTitle.id = resolvedTitleId
+    dialogTitle.setAttribute('data-radix-dialog-title', '')
+    dialogTitle.textContent = titleText
+    dialogTitle.classList.add('sr-only')
+
+    container.prepend(dialogTitle)
+  }
+
+  if (!container.getAttribute('aria-labelledby')) {
+    container.setAttribute('aria-labelledby', resolvedTitleId)
+  }
+
+  if (descriptionText) {
+    if (!container.querySelector(`#${resolvedDescriptionId}`)) {
+      const dialogDescription = document.createElement('p')
+      dialogDescription.id = resolvedDescriptionId
+      dialogDescription.textContent = descriptionText
+      dialogDescription.classList.add('sr-only')
+
+      container.prepend(dialogDescription)
+    }
+
+    if (!container.getAttribute('aria-describedby')) {
+      container.setAttribute('aria-describedby', resolvedDescriptionId)
+    }
+  }
+}
+
+const patchNewChatDialog = (shadow) => {
+  const modal = shadow.getElementById("new-chat-dialog")
+  const confirmButton = shadow.getElementById("confirm")
+
+  if (!modal || !confirmButton) {
+    return
+  }
+
+  const content = modal.matches?.('[data-radix-dialog-content]')
+    ? modal
+    : modal.querySelector?.('[data-radix-dialog-content]') || modal
+
+  ensureDialogAccessibility({
+    container: content,
+    titleText: gettext('Start a new chat'),
+    descriptionText: gettext(
+      'This will reset the current conversation and start a new chat.'
+    ),
+    titleId: 'chainlit-new-chat-title',
+    descriptionId: 'chainlit-new-chat-description'
+  })
+
+  if (!confirmButton.dataset.hasHandler) {
+    confirmButton.dataset.hasHandler = "true"
+
+    confirmButton.addEventListener(
+      "click",
+      () => {
         window.sendChainlitMessage({
           type: "system_message",
           output: "",
           metadata: {
-            "action": "reset_history",
-            "project": parseInt(projectId)
+            action: "reset_history",
+            project: projectId
           }
         })
+      },
+      { capture: true }
+    )
+  }
+}
 
-        // remove this listener so we don’t fire again
-        confirmButton.removeEventListener("click", handler)
+const applyCopilotPatches = () => {
+  const copilot = document.getElementById("chainlit-copilot")
+  if (!copilot) {
+    return
+  }
 
-        // trigger the original click (React handles it)
-        setTimeout(() => confirmButton.click(), 500)
+  const shadow = copilot.shadowRoot
 
-        // mark handler as attached to avoid duplicates
-        confirmButton.dataset.hasHandler = "true"
-      }
+  if (!shadow) {
+    return
+  }
 
-      // attach the listener
-      confirmButton.addEventListener("click", handler)
-    }
-  })
+  patchNewChatDialog(shadow)
+
+  if (!observedShadows.has(shadow)) {
+    const shadowObserver = new MutationObserver(() => {
+      patchNewChatDialog(shadow)
+    })
+
+    shadowObserver.observe(shadow, { childList: true, subtree: true })
+    observedShadows.add(shadow)
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const observer = new MutationObserver(applyCopilotPatches)
+
+  // Run once in case the widget is already rendered before we start observing.
+  applyCopilotPatches()
 
   observer.observe(document.body, { childList: true, subtree: true })
 });

@@ -24,6 +24,10 @@ SETTINGS_EXPORT += ['CHATBOT_URL']
 
 MIDDLEWARE.append('rdmo_chatbot.plugin.middleware.ChatbotMiddleware')
 
+# Address of the Chainlit server serving the copilot widget. Provide an
+# absolute URL if the frontend and chatbot are on different hosts. A
+# relative path (e.g., '/chatbot') also works when both are served from
+# the same domain.
 CHATBOT_URL = 'http://localhost:8080'
 CHATBOT_AUTH_SECRET = ''  # secret long random string
 
@@ -263,4 +267,4 @@ Acknowledgement
 
 We would like to thank the Federal Government and the Heads of Government of the Länder, as well as the
 Joint Science Conference (GWK), for their funding and support within the framework of the NFDI4ING consortium.
-Funded by the German Research Foundation (DFG) - project number 442146713."
+Funded by the German Research Foundation (DFG) - project number 442146713.
