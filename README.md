@@ -24,6 +24,10 @@ SETTINGS_EXPORT += ['CHATBOT_URL']
 
 MIDDLEWARE.append('rdmo_chatbot.plugin.middleware.ChatbotMiddleware')
 
+# Address of the Chainlit server serving the copilot widget. Provide an
+# absolute URL if the frontend and chatbot are on different hosts. A
+# relative path (e.g., '/chatbot') also works when both are served from
+# the same domain.
 CHATBOT_URL = 'http://localhost:8080'
 CHATBOT_AUTH_SECRET = ''  # secret long random string
 
