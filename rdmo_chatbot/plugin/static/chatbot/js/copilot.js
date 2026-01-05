@@ -191,6 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const modal = shadow.getElementById("new-chat-dialog")
     const confirmButton = shadow.getElementById("confirm")
+    const copilotButton = shadow.getElementById("chainlit-copilot-button")
 
     if (modal && confirmButton && !confirmButton.dataset.hasHandler) {
       const handler = async (event) => {
@@ -217,6 +218,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // attach the listener
       confirmButton.addEventListener("click", handler)
+    }
+
+    // update copilot button
+    if (copilotButton) {
+      const copilotButtonDiv = copilotButton.querySelector("div")
+      if (!shadow.querySelector(".copilot-button-label")) {
+        const copilotButtonLabelTemplate = document.getElementById("copilot-button-label-template")
+        const copilotButtonLabel = document.createElement("span")
+        copilotButtonLabel.className = "copilot-button-label"
+        copilotButtonLabel.innerHTML = copilotButtonLabelTemplate.innerHTML
+        copilotButtonDiv.before(copilotButtonLabel)
+
+        copilotButton.classList.remove("w-16")
+      }
     }
   })
 

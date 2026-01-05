@@ -74,3 +74,9 @@
 .watermark {
     display: none !important;
 }
+
+/* adust the copilot button text */
+
+.copilot-button-label {
+    font-size: 14px;
+}
