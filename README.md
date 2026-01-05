@@ -213,6 +213,11 @@ server {
     }
 
     location /chatbot/ {
+        # disable the chainlit web interface and all other routes which are not needed for the copilot
+        if ($uri !~ "^/chatbot/(auth/|avatars/|copilot/|logo$|project/|public/|set-session-cookie$|ws/|user$)") {
+            return 404;
+        }
+
         proxy_pass http://127.0.0.1:8080/chatbot/;
 
         proxy_http_version 1.1;
