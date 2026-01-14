@@ -43,6 +43,7 @@ CHATBOT_LANGUAGES = {
     "en": "en-US",
     "de": "de-DE"
 }
+CHATBOT_ASSISTANT_NAME = "Assistant"
 ```
 In addition, the chatbot endpoint needs to be added to the `config/urls.py`
 
@@ -263,4 +264,4 @@ Acknowledgement
 
 We would like to thank the Federal Government and the Heads of Government of the Länder, as well as the
 Joint Science Conference (GWK), for their funding and support within the framework of the NFDI4ING consortium.
-Funded by the German Research Foundation (DFG) - project number 442146713."
+Funded by the German Research Foundation (DFG) - project number 442146713.
