@@ -69,21 +69,11 @@ class LangChainAdapter(BaseAdapter):
 
         # check if we have a history, yet
         if store.has_history(user.identifier, project_id):
-            content = getattr(config, f"CONTINUATION_{lang_code.upper()}", "")
-            await cl.Message(content=content).send()
-            history = store.get_history(user.identifier, project_id)
-            await self.send_history(history, user)
+            await self.send_continuation(lang_code)
+            await self.send_history(user, project_id)
         else:
             # if the history is empty, display the confirmation message
-            content = getattr(config, f"CONFIRMATION_{lang_code.upper()}", "")
-            message = cl.AskActionMessage(content=content, actions=[
-                cl.Action(name="confirmation", icon="check", label="", payload={"value": "confirmation"}),
-                cl.Action(name="leave", icon="x", label="", payload={"value": "leave"}),
-            ])
-            response = await message.send()
-            await message.remove()
-
-            if response and response.get("payload").get("value") == "confirmation":
+            if await self.send_confirmation(lang_code):
                 content = getattr(config, f"START_{lang_code.upper()}", "").strip()
                 store.set_history(user.identifier, project_id, [
                     AIMessage(content=content)
@@ -170,7 +160,13 @@ class LangChainAdapter(BaseAdapter):
 
         await self.call_copilot("openContactModal", history=messages_to_dicts(history))
 
-    async def send_history(self, history, user):
+    async def send_continuation(self, lang_code):
+        content = getattr(config, f"CONTINUATION_{lang_code.upper()}", "")
+        await cl.Message(content=content).send()
+
+    async def send_history(self, user, project_id):
+        history = store.get_history(user.identifier, project_id)
+
         for message in history:
             if isinstance(message, HumanMessage):
                 message_author = user.display_name or "You"
@@ -182,6 +178,17 @@ class LangChainAdapter(BaseAdapter):
                 continue
 
             await cl.Message(content=message.content, author=message_author, type=message_type).send()
+
+    async def send_confirmation(self, lang_code):
+        content = getattr(config, f"CONFIRMATION_{lang_code.upper()}", "")
+        message = cl.AskActionMessage(content=content, actions=[
+            cl.Action(name="confirmation", icon="check", label="", payload={"value": "confirmation"}),
+            cl.Action(name="leave", icon="x", label="", payload={"value": "leave"}),
+        ])
+        response = await message.send()
+        await message.remove()
+
+        return response and response.get("payload").get("value") == "confirmation"
 
 class OpenAILangChainAdapter(LangChainAdapter):
 
