@@ -146,18 +146,6 @@ class LangChainAdapter(BaseAdapter):
 
         return response_message
 
-    async def send_history(self, history, user):
-
-        for message in history:
-            if isinstance(message, HumanMessage):
-                author = user.display_name or "You"
-            elif isinstance(message, AIMessage):
-                author = config.ASSISTANT_NAME
-            else:
-                continue
-
-            await cl.Message(content=message.content, author=author).send()
-
     async def on_system_message(self, message):
         try:
             action = message.metadata.get("action")
@@ -182,6 +170,18 @@ class LangChainAdapter(BaseAdapter):
 
         await self.call_copilot("openContactModal", history=messages_to_dicts(history))
 
+    async def send_history(self, history, user):
+        for message in history:
+            if isinstance(message, HumanMessage):
+                message_author = user.display_name or "You"
+                message_type = "user_message"
+            elif isinstance(message, AIMessage):
+                message_author = config.ASSISTANT_NAME
+                message_type = "assistant_message"
+            else:
+                continue
+
+            await cl.Message(content=message.content, author=message_author, type=message_type).send()
 
 class OpenAILangChainAdapter(LangChainAdapter):
 
