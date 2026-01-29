@@ -185,6 +185,82 @@ const copilotEventHandler = async (event) => {
 window.copilotEventHandler = copilotEventHandler
 
 document.addEventListener("DOMContentLoaded", () => {
+  const copyToClipboardTooltip = gettext('Copy to clipboard')
+  const insertAnswerTooltip = gettext('Insert as answer')
+  const contactSupportTooltip = gettext('Contact support')
+  const createCopyIcon = () => {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+    svg.setAttribute("width", "24")
+    svg.setAttribute("height", "24")
+    svg.setAttribute("viewBox", "0 0 24 24")
+    svg.setAttribute("fill", "none")
+    svg.setAttribute("stroke", "currentColor")
+    svg.setAttribute("stroke-width", "2")
+    svg.setAttribute("stroke-linecap", "round")
+    svg.setAttribute("stroke-linejoin", "round")
+    svg.classList.add("lucide", "lucide-copy")
+
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+    rect.setAttribute("x", "9")
+    rect.setAttribute("y", "9")
+    rect.setAttribute("width", "13")
+    rect.setAttribute("height", "13")
+    rect.setAttribute("rx", "2")
+    rect.setAttribute("ry", "2")
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+    path.setAttribute("d", "M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1")
+
+    svg.appendChild(rect)
+    svg.appendChild(path)
+
+    return svg
+  }
+
+  const getMessageText = (message) => {
+    const content = message.querySelector(".message-content, .message-text, .markdown") || message
+    return (content.textContent || "").trim()
+  }
+
+  const addCopyButton = (message) => {
+    if (message.querySelector("button svg.lucide-copy")) {
+      return
+    }
+
+    const existingButton = message.querySelector("button")
+    const buttonContainer = existingButton ? existingButton.parentElement : message
+    const copyButton = document.createElement("button")
+    copyButton.type = "button"
+    if (existingButton) {
+      copyButton.className = existingButton.className
+    }
+    copyButton.title = copyToClipboardTooltip
+    copyButton.setAttribute("aria-label", copyToClipboardTooltip)
+    copyButton.appendChild(createCopyIcon())
+    copyButton.addEventListener("click", (event) => {
+      event.stopPropagation()
+      const text = getMessageText(message)
+      if (!text) {
+        return
+      }
+      if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(text)
+      } else {
+        const textarea = document.createElement("textarea")
+        textarea.value = text
+        textarea.setAttribute("readonly", "")
+        textarea.style.position = "absolute"
+        textarea.style.left = "-9999px"
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand("copy")
+        document.body.removeChild(textarea)
+      }
+    })
+
+    buttonContainer.appendChild(copyButton)
+  }
   const observer = new MutationObserver((mutations, obs) => {
     const copilot = document.getElementById("chainlit-copilot")
     const shadow = copilot.shadowRoot
@@ -233,6 +309,25 @@ document.addEventListener("DOMContentLoaded", () => {
         copilotButton.classList.remove("w-16")
       }
     }
+
+    const actionButtons = shadow.querySelectorAll(".ai-message button")
+    actionButtons.forEach((button) => {
+      if (button.querySelector("svg.lucide-check") && button.title !== insertAnswerTooltip) {
+        button.title = insertAnswerTooltip
+        button.setAttribute("aria-label", insertAnswerTooltip)
+      }
+      if (button.querySelector("svg.lucide-x") && button.title !== contactSupportTooltip) {
+        button.title = contactSupportTooltip
+        button.setAttribute("aria-label", contactSupportTooltip)
+      }
+      if (button.querySelector("svg.lucide-copy") && button.title !== copyToClipboardTooltip) {
+        button.title = copyToClipboardTooltip
+        button.setAttribute("aria-label", copyToClipboardTooltip)
+      }
+    })
+
+    const aiMessages = shadow.querySelectorAll(".ai-message")
+    aiMessages.forEach(addCopyButton)
   })
 
   observer.observe(document.body, { childList: true, subtree: true })
