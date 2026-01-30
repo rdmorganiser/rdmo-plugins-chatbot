@@ -29,3 +29,15 @@ msgstr "Anfügen"
 #: static/chatbot/js/copilot.js:129
 msgid "Chat history"
 msgstr "Chat Historie"
+
+#: static/chatbot/js/copilot.js:189
+msgid "Insert as answer"
+msgstr "Als Antwort einfügen"
+
+#: static/chatbot/js/copilot.js:190
+msgid "Contact support"
+msgstr "support kontaktieren"
+
+#: static/chatbot/js/copilot.js:187
+msgid "Copy to clipboard"
+msgstr "In die Zwischenablage kopieren"
