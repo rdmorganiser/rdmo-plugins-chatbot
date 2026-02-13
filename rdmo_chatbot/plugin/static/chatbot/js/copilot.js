@@ -37,11 +37,17 @@ const handleTransfer = async (args) => {
   const questions = document.querySelectorAll('.interview-question')
 
   const inputs = Array.from(questions).reduce((inputs, question) => {
-    const widgets = question.querySelectorAll('.interview-widget')
-    return Array.from(widgets).reduce((inputs, widget) => {
-      const input = widget.querySelector('input[type="text"], textarea')
-      return input ? [...inputs, input] : inputs
-    }, inputs)
+    const widgets = question.querySelectorAll([
+      '.interview-widget .interview-input.text-input',
+      '.interview-widget .interview-input.textarea-input',
+      '.interview-widget .interview-input.radio-input',
+      '.interview-widget .interview-input.checkbox-input',
+    ].join(', '))
+
+    return Array.from(widgets).reduce((inputs, widget) => ([
+      ...inputs,
+      ...widget.querySelectorAll('input[type="text"], textarea')
+    ]), inputs)
   }, [])
 
   const backdrop = document.createElement('div')
