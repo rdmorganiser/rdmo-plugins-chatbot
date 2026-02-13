@@ -60,9 +60,9 @@ const handleTransfer = async (args) => {
   buttons.id = 'chatbot-buttons'
   buttons.style.position = 'absolute'
   buttons.style.top = 0
-  buttons.style.right = 0
-  buttons.style.bottom = 0
   buttons.style.left = 0
+  buttons.style.width = `${document.documentElement.scrollWidth}px`
+  buttons.style.height = `${document.documentElement.scrollHeight}px`
   buttons.style.zIndex = 1050
   buttons.addEventListener('click', () => {
     document.getElementById('chatbot-backdrop').remove()
@@ -120,9 +120,6 @@ const setInput = async (input, content, append) => {
     input._valueTracker.setValue(lastValue)
   }
   input.dispatchEvent(new Event('input', { bubbles: true }))
-
-  // document.getElementById('chatbot-backdrop').remove()
-  // document.getElementById('chatbot-buttons').remove()
 }
 
 const openContactModal = async (args) => {
