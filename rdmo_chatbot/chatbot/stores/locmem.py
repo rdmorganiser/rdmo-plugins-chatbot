@@ -2,7 +2,6 @@ from . import BaseStore
 
 
 class LocMemStore(BaseStore):
-
     _instance = None
     _store = {}
 
@@ -16,7 +15,7 @@ class LocMemStore(BaseStore):
         return self._store.get(user_identifier, {}).get(project_id) is not None
 
     def get_history(self, user_identifier, project_id):
-        return self._store.get(user_identifier, {}).get(project_id , [])
+        return self._store.get(user_identifier, {}).get(project_id, [])
 
     def set_history(self, user_identifier, project_id, history):
         if user_identifier not in self._store:

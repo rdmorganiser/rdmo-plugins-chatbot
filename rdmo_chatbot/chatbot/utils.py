@@ -11,18 +11,18 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 
 def get_config():
-    return SimpleNamespace(**json.loads(os.getenv("CHATBOT_CONFIG")))
+    return SimpleNamespace(**json.loads(os.getenv('CHATBOT_CONFIG')))
 
 
 def get_store(config):
-    store_module_name, store_class_name = config.STORE.rsplit(".", 1)
+    store_module_name, store_class_name = config.STORE.rsplit('.', 1)
     store_module = importlib.import_module(store_module_name)
     store_class = getattr(store_module, store_class_name)
     return store_class()
 
 
 def get_adapter(config):
-    adapter_module_name, adapter_class_name = config.ADAPTER.rsplit(".", 1)
+    adapter_module_name, adapter_class_name = config.ADAPTER.rsplit('.', 1)
     adapter_module = importlib.import_module(adapter_module_name)
     adapter_class = getattr(adapter_module, adapter_class_name)
     return adapter_class()
@@ -30,15 +30,15 @@ def get_adapter(config):
 
 def get_user(config, headers):
     cookies = SimpleCookie()
-    cookies.load(headers.get("cookie", ""))
+    cookies.load(headers.get('cookie', ''))
 
-    cookie = cookies.get("chatbot_token")
+    cookie = cookies.get('chatbot_token')
     if not cookie:
         return None
 
     try:
-        token = jwt.decode(cookie.value, config.AUTH_SECRET, algorithms=["HS256"])
-        return cl.User(identifier=token["identifier"], metadata=token["metadata"], display_name=token["display_name"])
+        token = jwt.decode(cookie.value, config.AUTH_SECRET, algorithms=['HS256'])
+        return cl.User(identifier=token['identifier'], metadata=token['metadata'], display_name=token['display_name'])
     except jwt.exceptions.InvalidSignatureError:
         return None
 
@@ -54,9 +54,9 @@ def messages_to_dicts(messages):
 def dicts_to_messages(dicts):
     messages = []
     for message in dicts:
-        message_type = message.get("type")
-        if message_type == "human":
+        message_type = message.get('type')
+        if message_type == 'human':
             messages.append(HumanMessage(**message))
-        elif message_type == "ai":
+        elif message_type == 'ai':
             messages.append(AIMessage(**message))
     return messages

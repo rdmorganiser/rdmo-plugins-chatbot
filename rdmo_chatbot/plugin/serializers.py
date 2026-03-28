@@ -5,16 +5,15 @@ from rdmo.projects.models import Project
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-
     answers = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields = [
-            "id",
-            "title",
-            "description",
-            "answers"
+            'id',
+            'title',
+            'description',
+            'answers',
         ]
 
     def get_answers(self, obj):

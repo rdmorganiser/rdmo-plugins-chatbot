@@ -1,5 +1,4 @@
 class BaseStore:
-
     def has_history(self, user_identifier, project_id):
         raise NotImplementedError
 

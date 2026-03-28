@@ -4,11 +4,11 @@ from django.core.exceptions import ImproperlyConfigured
 
 
 class ChatbotConfig(AppConfig):
-    name = "rdmo_chatbot.plugin"
+    name = 'rdmo_chatbot.plugin'
 
     def ready(self):
         middleware_list = settings.MIDDLEWARE
-        if "rdmo_chatbot.plugin.middleware.ChatbotMiddleware" not in middleware_list:
+        if 'rdmo_chatbot.plugin.middleware.ChatbotMiddleware' not in middleware_list:
             raise ImproperlyConfigured(
-                "rdmo_chatbot.plugin.middleware.ChatbotMiddleware must be added to settings.MIDDLEWARE"
+                'rdmo_chatbot.plugin.middleware.ChatbotMiddleware must be added to settings.MIDDLEWARE'
             )

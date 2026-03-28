@@ -6,15 +6,14 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-
     def add_arguments(self, parser):
-        parser.add_argument("--path", default=Path("theme"), type=Path, help="Path to the new theme [default: theme]")
+        parser.add_argument('--path', default=Path('theme'), type=Path, help='Path to the new theme [default: theme]')
 
     def setup(self, options):
-        self.theme_path = options["path"]
+        self.theme_path = options['path']
 
         # find the path of the rdmo_chatbot directory
-        chatbot_module = importlib.import_module("rdmo_chatbot.chatbot")
+        chatbot_module = importlib.import_module('rdmo_chatbot.chatbot')
         self.chatbot_path = Path(chatbot_module.__path__[0])
 
     def copy(self, path):
@@ -22,9 +21,9 @@ class Command(BaseCommand):
         target_path = self.theme_path / path
 
         if target_path.exists():
-            print(f"Skip {source_path} -> {target_path}. Target file exists.")
+            print(f'Skip {source_path} -> {target_path}. Target file exists.')
         else:
-            print(f"Copy {source_path} -> {target_path}.")
+            print(f'Copy {source_path} -> {target_path}.')
 
             target_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -38,10 +37,10 @@ class Command(BaseCommand):
 
         self.theme_path.mkdir(exist_ok=True)
 
-        self.copy(".chainlit")
-        self.copy("chainlit.md")
-        self.copy("chainlit_en-US.md")
-        self.copy("chainlit_de-DE.md")
-        self.copy("public")
+        self.copy('.chainlit')
+        self.copy('chainlit.md')
+        self.copy('chainlit_en-US.md')
+        self.copy('chainlit_de-DE.md')
+        self.copy('public')
 
-        print("Done")
+        print('Done')
