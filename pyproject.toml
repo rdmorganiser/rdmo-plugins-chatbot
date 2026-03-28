@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "rdmo-plugins-chatbot"
 description = """
 A RDMO plugin that adds an AI chatbot to assist researchers in writing Data Management Plans.
-It's based on Chainlit and LangChain and supports multiple LLM backends (OpenAI, Ollama)
+It's based on Chainlit and LangChain and supports multiple LLM backends (OpenAI, Ollama).
 """
 authors = [
     {name = "RDMO Community and individual contributors", email = "contact@rdmo.org"},
