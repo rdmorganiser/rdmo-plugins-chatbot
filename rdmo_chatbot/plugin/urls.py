@@ -10,5 +10,5 @@ router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet, basename='project')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('chatbot/', include(router.urls)),
 ]

@@ -48,7 +48,7 @@ CHATBOT_ASSISTANT_NAME = "Assistant"
 In addition, the chatbot endpoint needs to be added to the `config/urls.py`
 
 ```python
-urlpatterns += [path("api/v1/chatbot/", include("rdmo_chatbot.plugin.urls"))]
+urlpatterns += [path("api/v1/", include("rdmo_chatbot.plugin.urls"))]
 ```
 
 ### Adapter
