@@ -9,10 +9,10 @@ class ChatbotMiddleware:
         response = self.get_response(request)
 
         if request.user.is_authenticated:
-            response.set_cookie("chatbot_token", get_chatbot_token(request.user))
+            response.set_cookie('chatbot_token', get_chatbot_token(request.user))
         else:
-            response.delete_cookie("chatbot_token")
-            response.delete_cookie("access_token")
-            response.delete_cookie("X-Chainlit-Session-id")
+            response.delete_cookie('chatbot_token')
+            response.delete_cookie('access_token')
+            response.delete_cookie('X-Chainlit-Session-id')
 
         return response

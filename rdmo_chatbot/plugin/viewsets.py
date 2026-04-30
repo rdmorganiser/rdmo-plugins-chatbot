@@ -9,6 +9,6 @@ from .serializers import ProjectSerializer
 
 
 class ProjectViewSet(RetrieveModelMixin, GenericViewSet):
-    permission_classes = (HasModelPermission | HasProjectsPermission, )
+    permission_classes = (HasModelPermission | HasProjectsPermission,)
     serializer_class = ProjectSerializer
     queryset = Project.objects.all()

@@ -1,17 +1,17 @@
-/* adust the width of the logo */
+/* adjust the width of the logo */
 
 .logo {
     width: 160px;
 }
 
-/* adust the avatar */
+/* adjust the avatar */
 
 .ai-message span:has(> img) {
     width: 32px !important;
     height: 32px !important;
 }
 
-/* adust the input field (composer) of the copilot */
+/* adjust the input field (composer) of the copilot */
 
 #message-composer textarea {
     font-size: 14px;
@@ -25,7 +25,7 @@
     height: 22px !important;
 }
 
-/* adust the new chat dialog buttons */
+/* adjust the new chat dialog buttons */
 
 #new-chat-dialog {
     max-width: 40em;
@@ -65,7 +65,7 @@
     display: none !important;
 }
 
-/* adust the copilot button text */
+/* adjust the copilot button text */
 
 .copilot-button-label {
     font-size: 14px;

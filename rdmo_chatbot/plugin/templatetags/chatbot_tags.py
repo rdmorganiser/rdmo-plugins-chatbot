@@ -7,8 +7,8 @@ from ..utils import get_chatbot_token
 register = template.Library()
 
 CHATBOT_LANGUAGES = {
-    "en": "en-US",
-    "de": "de-DE"
+    'en': 'en-US',
+    'de': 'de-DE',
 }
 
 
