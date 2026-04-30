@@ -46,6 +46,12 @@ openai = [
 ollama = [
   "langchain-ollama",
 ]
+anthropic = [
+  "langchain-anthropic"
+]
+mistralai = [
+  "langchain-mistralai"
+]
 redis = [
   "redis"
 ]

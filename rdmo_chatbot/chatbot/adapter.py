@@ -205,3 +205,19 @@ class OllamaLangChainAdapter(LangChainAdapter):
         from langchain_ollama import ChatOllama
 
         return ChatOllama(**config.LLM_ARGS)
+
+
+class AnthropicLangChainAdapter(LangChainAdapter):
+    @property
+    def llm(self):
+        from langchain_anthropic import ChatAnthropic
+
+        return ChatAnthropic(**config.LLM_ARGS)
+
+
+class MistralAILangChainAdapter(LangChainAdapter):
+    @property
+    def llm(self):
+        from langchain_mistralai import ChatMistralAI
+
+        return ChatMistralAI(**config.LLM_ARGS)

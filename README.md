@@ -13,7 +13,9 @@ pip install git+https://github.com/rdmorganiser/rdmo-plugins-chatbot
 # alternatively, from a local copy
 git clone git@github.com:rdmorganiser/rdmo-plugins-llm-views
 pip install -e rdmo-plugins-chatbot[openai]
-pip install -e rdmo-plugins-chatbot[ollama]  # alternatively
+pip install -e rdmo-plugins-chatbot[ollama]     # alternatively
+pip install -e rdmo-plugins-chatbot[anthropic]  # alternatively
+pip install -e rdmo-plugins-chatbot[mistralai]  # alternatively
 ```
 
 Add the following to your `config/settings/local.py`:
@@ -74,6 +76,26 @@ Alternatively, for the `OllamaLangChainAdapter`:
 CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.OllamaLangChainAdapter'
 CHATBOT_LLM_ARGS = {
     "model": 'mistral:7b'
+}
+```
+
+Alternatively, for the `AnthropicLangChainAdapter`:
+
+```python
+CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.AnthropicLangChainAdapter'
+CHATBOT_LLM_ARGS = {
+    'api_key': '',
+    "model": 'claude-sonnet-4-6'
+}
+```
+
+Alternatively, for the `MistralAILangChainAdapter`:
+
+```python
+CHATBOT_ADAPTER = 'rdmo_chatbot.chatbot.adapter.MistralAILangChainAdapter'
+CHATBOT_LLM_ARGS = {
+    'api_key': '',
+    "model": 'mistral-medium-latest'
 }
 ```
 
